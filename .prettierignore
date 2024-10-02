@@ -1,0 +1,8 @@
+# Ignore artifacts:
+build
+coverage
+installations
+node_modules
+.next
+prisma
+wordpress

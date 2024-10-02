@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+model WordPressInstallation {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  domain      String   @unique
+  path        String   // Path locale della directory dei file di WordPress
+  dockerId    String   @unique // ID del container Docker associato
+  status      String   // Stato dell'installazione (e.g. running, stopped, etc.)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relazione con la configurazione Docker
+  dockerConfigId Int?
+  dockerConfig   DockerConfig? @relation(fields: [dockerConfigId], references: [id])
+  
+  // Relazione con le impostazioni di WordPress
+  wordpressSettingsId Int?
+  wordpressSettings   WordPressSettings? @relation(fields: [wordpressSettingsId], references: [id])
+}
+
+model DockerConfig {
+  id          Int      @id @default(autoincrement())
+  containerName String  @unique
+  image       String   // Immagine Docker utilizzata (e.g. wordpress:latest)
+  ports       String   // Mappatura delle porte (e.g. "8080:80")
+  volumes     String   // Mappatura dei volumi (e.g. "/var/www/html")
+  environment String   // Variabili d'ambiente Docker (JSON o formato string)
+  restartPolicy String @default("always")  // Politica di riavvio del container (e.g. "always", "on-failure")
+  networkName String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relazione con WordPressInstallations
+  wordpressInstallations WordPressInstallation[]
+}
+
+model WordPressSettings {
+  id          Int      @id @default(autoincrement())
+  siteDescription String
+  siteName    String   // Nome del sito WordPress
+  siteUrl     String   // URL del sito WordPress
+  
+  adminEmail  String   // Email dell'admin
+  adminName   String
+  adminPassword String
+  
+  dbHost      String   // Host del database
+  dbName      String   // Nome del database
+  dbUser      String   // Utente del database
+  dbPassword  String   // Password del database
+  tablePrefix String   @default("WP_")   // Prefisso delle tabelle di WordPress
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  empty       String?
+  // Relazione con WordPressInstallations
+  wordpressInstallations WordPressInstallation[]
+}
