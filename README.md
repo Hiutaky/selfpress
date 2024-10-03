@@ -20,8 +20,8 @@ SelfPress is a multi-instance WordPress management system that allows users to m
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/SelfPress.git
-   cd SelfPress
+   git clone https://github.com/Hiutaky/selfpress.git
+   cd selfpress
    ```
 
 2. **Install dependencies**:
