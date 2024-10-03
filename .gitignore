@@ -35,8 +35,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+*/dev.db
+*.db
+
 installations/*
 nginx-configs/*
 
-prisma/dev.db
-*.db
+.env
