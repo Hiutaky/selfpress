@@ -47,7 +47,8 @@ const createNewWordPressInstance = async ({
     console.log(result.message, result.error);
     return false;
   }
-
+  const retries = 5;
+  const delay = 10000;
   try {
     const response = await runCommandWithLogging(
       Commands.WordPress.create({
@@ -67,26 +68,49 @@ const createNewWordPressInstance = async ({
         Commands.WordPress.installWpCli({ uniqueName }),
       );
       if (installResponse) {
-        const setupResponse = await runCommandWithLogging(
-          Commands.WordPress.setupWpCli({
-            adminEmail: settings.adminEmail,
-            adminName: settings.adminName,
-            adminPassword: settings.adminPassword,
-            port,
-            siteDescription: settings.siteDescription,
-            siteName: settings.siteName,
-            uniqueName,
-          }),
-        );
-        if (setupResponse) {
-          await runCommandWithLogging(
-            Commands.WordPress.copySafepressPlugin(uniqueName),
-          );
-          await runCommandWithLogging(
-            Commands.WordPress.activateSafepressPlugin(uniqueName),
-          );
+        for(let i = 0; i < retries; i++) {
+          try {
+            const setupResponse = await runCommandWithLogging(
+              Commands.WordPress.setupWpCli({
+                adminEmail: settings.adminEmail,
+                adminName: settings.adminName,
+                adminPassword: settings.adminPassword,
+                port,
+                siteDescription: settings.siteDescription,
+                siteName: settings.siteName,
+                uniqueName,
+              }),
+            );
+            if (setupResponse) {
+              await runCommandWithLogging(
+                Commands.WordPress.copySafepressPlugin(uniqueName),
+              );
+              await runCommandWithLogging(
+                Commands.WordPress.activateSafepressPlugin(uniqueName),
+              );
+            }
+            return setupResponse;
+          } catch ( error ) {
+            console.error(
+              `Attempt ${i + 1}: Error executing WP Setup command: ${error}`,
+            );
+            if (i < retries - 1) {
+              console.log(`Retrying in ${delay / 1000} seconds...`);
+              await new Promise((resolve) => setTimeout(resolve, delay)); // Wait before retrying
+            } else {
+              console.error(
+                `Error during wordpress creation process`,
+                error,
+              );
+              return {
+                success: false,
+                message: `Error creating wp instance"`,
+                error,
+              };
+            }
+          }
         }
-        return setupResponse;
+        return false;
       } else return false;
     } else return false;
   } catch (e) {
