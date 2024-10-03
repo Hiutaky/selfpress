@@ -69,7 +69,7 @@ export const wordpressRouter = router({
         });
         const installationCreated = await ctx.db.wordPressInstallation.create({
           data: {
-            path: `${env.DOCKER_BASE_PATH}/${uniqueContainerName}:var/www/html`,
+            path: `${process.cwd()}/${env.DOCKER_BASE_PATH}/${uniqueContainerName}:var/www/html`,
             dockerId: uniqueContainerName,
             ...installationData,
             dockerConfigId: dockerConfigCreated.id,

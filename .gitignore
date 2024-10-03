@@ -35,4 +35,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-installations
+*/dev.db
+*.db
+
+installations/*
+nginx-configs/*
+
+.env

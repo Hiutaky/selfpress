@@ -18,13 +18,13 @@ model WordPressInstallation {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
-  // Relazione con la configurazione Docker
   dockerConfigId Int?
   dockerConfig   DockerConfig? @relation(fields: [dockerConfigId], references: [id])
   
-  // Relazione con le impostazioni di WordPress
   wordpressSettingsId Int?
   wordpressSettings   WordPressSettings? @relation(fields: [wordpressSettingsId], references: [id])
+
+  domains     Domain[] @relation("wordpressDomains")
 }
 
 model DockerConfig {
@@ -39,7 +39,6 @@ model DockerConfig {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
-  // Relazione con WordPressInstallations
   wordpressInstallations WordPressInstallation[]
 }
 
@@ -61,6 +60,16 @@ model WordPressSettings {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   empty       String?
-  // Relazione con WordPressInstallations
+
   wordpressInstallations WordPressInstallation[]
+}
+
+model Domain {
+  id                     String   @id @default(cuid())
+  domainName             String   @unique
+  dnsPointing            Boolean
+  wordpressInstallationId Int
+  wordpressInstallation   WordPressInstallation @relation("wordpressDomains", fields: [wordpressInstallationId], references: [id])
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 }

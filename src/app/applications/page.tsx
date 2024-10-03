@@ -73,7 +73,9 @@ export default async function Page() {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <Link href={`/applications/${instance.name}`}>Edit</Link>
+                        <Link href={`/applications/${instance.name}`}>
+                          Edit
+                        </Link>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

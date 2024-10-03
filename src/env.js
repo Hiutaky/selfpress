@@ -26,6 +26,7 @@ export const env = createEnv({
     MYSQL_ROOT_PASSWORD: process.env.MYSQL_ROOT_PASSWORD,
     MYSQL_PUBLIC_PORT: process.env.MYSQL_PUBLIC_PORT,
     MYSQL_CONTAINER_NAME: process.env.MYSQL_CONTAINER_NAME,
+    NGINX_CONTAINER_NAME: process.env.NGINX_CONTAINER_NAME,
   },
   /**
    * Specify your server-side environment variables schema here. This way you can ensure the app
@@ -47,5 +48,6 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    NGINX_CONTAINER_NAME: z.string(),
   },
 });

@@ -34,6 +34,10 @@ const Header: React.FC<Props> = ({}) => {
       label: "Applications",
     },
     {
+      href: "domains",
+      label: "Domains",
+    },
+    {
       href: "database",
       label: "Database",
     },
