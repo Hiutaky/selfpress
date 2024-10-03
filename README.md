@@ -14,9 +14,7 @@ SelfPress is a multi-instance WordPress management system that allows users to m
 ## Prerequisites
 
 - **Docker**: Make sure you have Docker installed. You can install it by following the official [Docker documentation](https://docs.docker.com/get-docker/).
-- **Docker Compose** (optional): To simplify managing multi-container environments.
-- **Node.js**: For running the SelfPress manager.
-- **MySQL**: A running instance of MySQL for database management.
+- **Bun.sh**: For running the SelfPress manager. [Get Bun](https://bun.sh/)
 
 ## Installation
 
@@ -28,28 +26,20 @@ SelfPress is a multi-instance WordPress management system that allows users to m
 
 2. **Install dependencies**:
    ```bash
-   npm install
+   bun install
    ```
 
-3. **Set up environment variables**: Create a `.env` file in the root directory and add the following:
-   ```
-   ROOT_PASSWORD=your_mysql_root_password
-   MYSQL_CONTAINER_NAME=mysql-main
-   DOCKER_NETWORK=self-press
-   ```
+3. **Set up environment variables**: Copy `.env.default` to `.env` in the root directory and customize as you prefer.
 
-4. **Set up Docker network** (if not already existing):
+4. **Set up Prisma DB**:
    ```bash
-   docker network create self-press
+   bunx prisma db push
+   bunx prisma db generate
    ```
 
-5. **Start the MySQL container** (or make sure an existing one is running):
+5. **Start the Dev server**:
    ```bash
-   docker run -d --name mysql-main \
-       --network self-press \
-       -e MYSQL_ROOT_PASSWORD=your_mysql_root_password \
-       -p 3306:3306 \
-       mysql:latest
+   bun dev
    ```
 
 ## Usage
