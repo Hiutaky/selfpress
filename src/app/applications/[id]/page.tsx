@@ -9,13 +9,13 @@ import { api } from "~/trpc/server";
 
 type Props = {
   params: {
-    name: string;
+    id: number;
   };
 };
 
 export default async function Page(req: Props) {
   const wordPress = await api.wordpress.read.query({
-    name: req.params.name,
+    id: req.params.id,
   });
 
   if (!wordPress) redirect("/applications");
@@ -23,7 +23,7 @@ export default async function Page(req: Props) {
   const { dockerConfig, wordpressSettings } = wordPress;
 
   const authLink = () => {
-    return `${wordPress.domain}/wp-admin?accessToken=${btoa(`${wordpressSettings?.adminName}:${wordpressSettings?.adminPassword}`)}`;
+    return `${wordpressSettings?.siteUrl}/wp-admin?accessToken=${btoa(`${wordpressSettings?.adminName}:${wordpressSettings?.adminPassword}`)}`;
   };
 
   return (
@@ -32,16 +32,17 @@ export default async function Page(req: Props) {
       <div className="grid grid-cols-2 gap-3">
         <Box title="Main Details">
           {/** MAIN DETAILS */}
-          <ListItem label="Domain">
+          <ListItem label="Public Domain">
             <Link
-              href={wordPress.domain}
+              href={wordpressSettings?.siteUrl ?? wordPress.domain}
               target="_blank"
               className="flex flex-row gap-2 items-center"
             >
-              {wordPress?.domain}
+              {wordpressSettings?.siteUrl ?? wordPress.domain}
               <Icon size={18}>open_in_new</Icon>
             </Link>
           </ListItem>
+          <ListItem label="Local Domain">{wordPress?.domain}</ListItem>
           <ListItem label="Path">{wordPress.path}</ListItem>
           <ListItem label="Created">
             {new Date(wordPress.createdAt).toLocaleString()}

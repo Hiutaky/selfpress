@@ -9,6 +9,7 @@ import { env } from "~/env";
 import WordPress from "~/utils/wordpress";
 import { TRPCError } from "@trpc/server";
 import Docker from "~/utils/docker";
+import { cwd } from "process";
 
 // Router tRPC per WordPressInstallations
 export const wordpressRouter = router({
@@ -27,9 +28,8 @@ export const wordpressRouter = router({
 
       while (await Docker.isPortUsed(port)) port++;
 
-      wordpressSettings.siteUrl = `${wordpressSettings.siteUrl}:${port}`;
       installationData.domain = `${installationData.domain}:${port}`;
-      installationData.name = `${installationData.name}_${rand}`;
+      installationData.name = `${installationData.name}`;
       try {
         await Docker.createNetwork(env.DOCKER_NETWORK_NAME);
         const response = await WordPress.createNewWordPressInstance({
@@ -53,6 +53,8 @@ export const wordpressRouter = router({
           });
         const dockerConfigCreated = await ctx.db.dockerConfig.create({
           data: {
+            networkName: env.DOCKER_NETWORK_NAME,
+            volumes: `${cwd()}/${env.DOCKER_BASE_PATH}`,
             ports: port.toString(),
             ...dockerConfig,
             containerName: uniqueContainerName,
@@ -60,6 +62,7 @@ export const wordpressRouter = router({
         });
         const wordpressSettingsCreated = await ctx.db.wordPressSettings.create({
           data: {
+            siteUrl: installationData.domain,
             ...wordpressSettings,
             dbHost: `${env.MYSQL_CONTAINER_NAME}:3306`,
             dbName,
@@ -89,7 +92,7 @@ export const wordpressRouter = router({
     .input(getOrDeleteWordPressInstallationSchema)
     .query(async ({ ctx, input }) => {
       return await ctx.db.wordPressInstallation.findUnique({
-        where: { name: input.name },
+        where: { id: Number(input.id) },
         include: {
           dockerConfig: true,
           wordpressSettings: true,
@@ -150,7 +153,7 @@ export const wordpressRouter = router({
     .mutation(async ({ ctx, input }) => {
       // Trova l'installazione
       const installation = await ctx.db.wordPressInstallation.findUnique({
-        where: { name: input.name },
+        where: { id: Number(input.id) },
       });
 
       if (
@@ -172,7 +175,7 @@ export const wordpressRouter = router({
 
       // Elimina WordPressInstallation
       await ctx.db.wordPressInstallation.delete({
-        where: { name: input.name },
+        where: { id: Number(input.id) },
       });
 
       return { success: true };

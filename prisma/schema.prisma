@@ -68,6 +68,7 @@ model Domain {
   id                     String   @id @default(cuid())
   domainName             String   @unique
   dnsPointing            Boolean
+  isSsl                  Boolean  @default(true)
   wordpressInstallationId Int
   wordpressInstallation   WordPressInstallation @relation("wordpressDomains", fields: [wordpressInstallationId], references: [id])
   createdAt              DateTime @default(now())

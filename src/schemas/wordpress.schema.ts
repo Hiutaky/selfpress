@@ -6,16 +6,12 @@ export type InstallationStatus = z.infer<typeof installationStatus>;
 // Schema per la creazione di una nuova installazione WordPress
 export const createWordPressInstallationSchema = z.object({
   name: z.string().min(3),
-  domain: z.string().url(),
+  domain: z.string().url().default("http://localhost"),
   status: z.string().default(installationStatus.Enum.RUNNING),
   dockerConfig: z.object({
     image: z.string().default("wordpress:latest"),
-    volumes: z
-      .string()
-      .default("/home/alessandro/Scrivania/Code/installations/"),
     environment: z.string().default("development"),
-    restartPolicy: z.string(),
-    networkName: z.string(),
+    restartPolicy: z.string().default("always"),
   }),
   wordpressSettings: z.object({
     adminName: z.string(),
@@ -23,8 +19,6 @@ export const createWordPressInstallationSchema = z.object({
     adminEmail: z.string().email(),
     siteDescription: z.string(),
     siteName: z.string(),
-    siteUrl: z.string().url(),
-    tablePrefix: z.string().default("WP_"),
   }),
 });
 
@@ -60,5 +54,5 @@ export const updateWordPressInstallationSchema = z.object({
 
 // Schema per la lettura e cancellazione di un'installazione
 export const getOrDeleteWordPressInstallationSchema = z.object({
-  name: z.string(),
+  id: z.number().or(z.string()),
 });

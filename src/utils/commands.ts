@@ -46,6 +46,8 @@ const Commands = {
   Docker: {
     createNetwork: (name: string) => `docker network create ${name}`,
     checkName: (name: string) =>
+      `docker ps -a --filter "name=${name}" --format "{{.ID}}"`,
+    checkNetwork: (name: string) =>
       `docker network ls --filter name=${name} --format "{{.Name}}"`,
     checkPort: (port: number | string) =>
       `docker ps --filter "publish=${port}" --format "{{.Names}}"`,
@@ -87,6 +89,7 @@ const Commands = {
     ) => `docker run -d --name ${containerName} \
           --network ${networkName} \
           -p 80:80 \
+          -p 443:443 \
           -v $(pwd)/nginx-configs:/etc/nginx/conf.d \
           nginx:latest`,
     reload: (containerName: string) =>
@@ -133,6 +136,8 @@ const Commands = {
       `docker cp ./wordpress/selfpress-utils.php ${uniqueName}:/var/www/html/wp-content/plugins/selfpress-utils.php`,
     activateSafepressPlugin: (uniqueName: string) =>
       `docker exec -t ${uniqueName} /bin/bash -c "su -s /bin/bash www-data -c 'wp plugin activate selfpress-utils'"`,
+    replaceUrls: (containerName: string, oldUrl: string, newUrl: string) =>
+      `docker exec ${containerName} /bin/bash -c "su -s /bin/bash www-data -c 'wp search-replace ${oldUrl} ${newUrl} --all-tables'"`,
   },
 };
 

@@ -4,7 +4,7 @@ import { execPromise, execPromiseStdout } from "./exec";
 const createNetwork = async (networkName: string) => {
   try {
     const result = await execPromiseStdout(
-      Commands.Docker.checkName(networkName),
+      Commands.Docker.checkNetwork(networkName),
     );
     if (result === networkName) {
       return {

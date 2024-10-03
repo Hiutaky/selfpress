@@ -1,6 +1,6 @@
 {
   "name": "selfpress",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -24,6 +24,8 @@
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-switch": "^1.1.1",
+    "@radix-ui/react-toggle": "^1.1.0",
     "@t3-oss/env-nextjs": "^0.11.1",
     "@trpc/client": "^10.45.2",
     "@trpc/next": "^10.45.2",
