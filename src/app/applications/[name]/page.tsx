@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import React, { ReactNode } from "react";
+import React from "react";
 import Box from "~/components/shared/Box";
 import Icon from "~/components/shared/Icon";
 import ListItem from "~/components/shared/ListItem";
@@ -67,9 +67,9 @@ export default async function Page(req: Props) {
           </ListItem>
           <ListItem label="Network">{dockerConfig?.networkName}</ListItem>
           <ListItem label="Image">
-            <Link 
+            <Link
               className="flex flex-row gap-2 items-center"
-              href={`https://hub.docker.com/_/${dockerConfig && dockerConfig?.image.search(':') > -1 ? dockerConfig?.image.split(':').at(0) : dockerConfig?.image}`} 
+              href={`https://hub.docker.com/_/${dockerConfig && dockerConfig?.image.search(":") > -1 ? dockerConfig?.image.split(":").at(0) : dockerConfig?.image}`}
               target="_blank"
             >
               {dockerConfig?.image}

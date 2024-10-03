@@ -80,6 +80,18 @@ const Commands = {
       GRANT ALL PRIVILEGES ON ${dbName}.* TO '${dbUser}'@'%';
       FLUSH PRIVILEGES;"`,
   },
+  Nginx: {
+    create: (
+      containerName: string,
+      networkName: string,
+    ) => `docker run -d --name ${containerName} \
+          --network ${networkName} \
+          -p 80:80 \
+          -v $(pwd)/nginx-configs:/etc/nginx/conf.d \
+          nginx:latest`,
+    reload: (containerName: string) =>
+      `docker exec ${containerName} nginx -s reload`,
+  },
   WordPress: {
     create: ({
       uniqueName,
