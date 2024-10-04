@@ -28,7 +28,7 @@ const Icon: React.FC<Props> = ({
   children,
   className,
   inheritSize = false,
-  size = 24,
+  size = 14,
 }) => {
   let fontSize = `${size}px`;
 

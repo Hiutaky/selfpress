@@ -27,9 +27,9 @@ export default async function Page(req: Props) {
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      <h2 className="text-xl font-semibold">Wordpress: {wordPress.name}</h2>
-      <div className="grid grid-cols-2 gap-3">
+    <div className="flex flex-col gap-6">
+      <h2 className="text-xs text-white font-semibold">Wordpress: {wordPress.name}</h2>
+      <div className="grid grid-cols-2 gap-5">
         <Box title="Main Details">
           {/** MAIN DETAILS */}
           <ListItem label="Public Domain">

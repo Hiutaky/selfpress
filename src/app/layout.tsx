@@ -30,12 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} text-white bg-stone-900 antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} text-white text-opacity-60 text-xs bg-stone-950 antialiased`}
       >
         <TRPCReactProvider cookies={cookies().toString()}>
-          <div className="flex flex-col justify-center items-center gap-3">
+          <div className="flex flex-col justify-center items-center">
             <Header />
-            <div className="container p-4 bg-stone-950 rounded shadow-sm">
+            <div className="container p-6 rounded shadow-sm">
               {children}
             </div>
           </div>

@@ -17,6 +17,8 @@ import {
 } from "~/components/ui/table";
 import { api } from "~/trpc/server";
 import AddNewWordpressForm from "./_components/AddNewWordpressForm";
+import Heading from "~/components/shared/Heading";
+import Card from "~/components/shared/Card";
 
 export default async function Page() {
   const wpInstances = await api.wordpress.readAll.query();
@@ -24,7 +26,7 @@ export default async function Page() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-row items-center justify-between">
-        <h2 className="text-xl font-semibold">WordPress Applications</h2>
+        <Heading>Applications</Heading>
         <AddNewWordpressForm>
           <Button>
             <Icon>add</Icon>
@@ -32,46 +34,14 @@ export default async function Page() {
           </Button>
         </AddNewWordpressForm>
       </div>
-      <span>Manage all your WordPress Containers from here.</span>
       {wpInstances.length ? (
-        <div className="p-2 bg-stone-800 rounded">
-          <Table>
-            <TableHeader>
-              <TableRow className="font-semibold">
-                <TableCell>Name</TableCell>
-                <TableCell>URL</TableCell>
-                <TableCell>Creation</TableCell>
-                <TableCell>Docker Path</TableCell>
-                <TableCell>Port</TableCell>
-                <TableCell>Network Name</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+        <div className="grid grid-cols-3 gap-3">
               {wpInstances.map((instance, i) => (
-                <TableRow key={i} className="py-4">
-                  <TableCell>
-                    <Link href={`/applications/${instance.id}`}>
+                <Card hoverable key={i}>
+                  <div className="flex flex-row justify-between">
+                    <Link className="text-white font-semibold" href={`/applications/${instance.id}`}>
                       {instance.name}
                     </Link>
-                  </TableCell>
-                  <TableCell>
-                    <Link
-                      href={
-                        instance.wordpressSettings?.siteUrl ?? instance.domain
-                      }
-                      target="_blank"
-                    >
-                      {instance.wordpressSettings?.siteUrl ?? instance.domain}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(instance.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>{instance.path}</TableCell>
-                  <TableCell>{instance.dockerConfig?.ports}</TableCell>
-                  <TableCell>{instance.dockerConfig?.networkName}</TableCell>
-                  <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger>
                         <Icon>more_vert</Icon>
@@ -89,11 +59,19 @@ export default async function Page() {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </TableCell>
-                </TableRow>
+                  </div>
+                  <Link
+                    href={
+                      instance.wordpressSettings?.siteUrl ?? instance.domain
+                    }
+                    target="_blank"
+                  >
+                    {instance.wordpressSettings?.siteUrl ?? instance.domain}
+                  </Link>
+                  <span>{instance.dockerConfig?.containerName}:{instance.dockerConfig?.ports}</span>
+                  {new Date(instance.createdAt).toLocaleDateString()}
+                </Card>
               ))}
-            </TableBody>
-          </Table>
         </div>
       ) : (
         <Alert>

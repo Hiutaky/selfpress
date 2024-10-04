@@ -60,38 +60,39 @@ const Header: React.FC<Props> = ({}) => {
         adminPassword: "Cercaz2016?",
         siteDescription: "Just a demo site",
         adminEmail: "hiutaky@gmail.com",
-        siteName: "Test site",
-        siteUrl: "http://localhost",
-        tablePrefix: "wp_",
+        siteName: "Test site"
       },
       dockerConfig: {
         //containerName: 'firstcontainer',
-        networkName: "main-network",
         restartPolicy: "always",
       },
     });
   };
 
   return (
-    <div className="container flex flex-row justify-between items-center text-white p-3 bg-stone-950 rounded mt-3">
-      <Link href={"/"}>
-        <h1 className="text-xl font-semibold">SelfPress</h1>
-      </Link>
-      <ul className="flex flex-row gap-3 font-semibold">
+    <div className="w-full flex flex-col gap-2 text-white p-4 pb-[0px] bg-stone-950 border-b-[1px]">
+      <div className="flex flex-row justify-between items-center">
+        <Link href={"/"}>
+          <h1 className="text-xl font-semibold">SelfPress</h1>
+        </Link>
+        <Button onClick={() => createWordpress()}>
+          <Icon>add</Icon>
+          Create
+        </Button>
+      </div>
+      <ul className="flex flex-row text-xs">
         {menu.map((item, i) => (
-          <Link
-            className={`hover:text-opacity-100 transition-all ${active === item.href ? "text-primary" : "text-white"} text-opacity-75`}
-            href={`/${item.href}`}
-            key={i}
-          >
-            {item.label}
-          </Link>
+          <li className={`py-3  ${active === item.href ? "border-b-2 border-white" : "text-opacity-75"}`}>
+            <Link
+              className={`hover:text-opacity-100 text-opacity-50 transition-all rounded text-white ${active === item.href && 'text-opacity-100'} hover:bg-slate-50 hover:bg-opacity-10 x py-2 px-3`}
+              href={`/${item.href}`}
+              key={i}
+            >
+              {item.label}
+            </Link>
+          </li>
         ))}
       </ul>
-      <Button onClick={() => createWordpress()}>
-        <Icon size={18}>add</Icon>
-        Create
-      </Button>
     </div>
   );
 };

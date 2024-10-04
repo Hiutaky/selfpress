@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import Link from "next/link";
+import Card from "~/components/shared/Card";
 
 export default async function Page() {
   const domains = await api.domain.readAll.query();
@@ -23,32 +24,22 @@ export default async function Page() {
           <Button>Add Domain</Button>
         </AddDomainForm>
       </div>
-      <div className="flex flex-col gap-3">
-        {domains.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableCell>Domain</TableCell>
-                <TableCell>SSL</TableCell>
-                <TableCell>WordPress Instance</TableCell>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {domains.map((domain, d) => (
-                <TableRow key={d}>
-                  <TableCell>{domain.domainName}</TableCell>
-                  <TableCell>{domain.isSsl ? "Yes" : "No"}</TableCell>
-                  <TableCell>
-                    <Link
-                      href={`/applications/${domain.wordpressInstallationId}`}
-                    >
-                      {domain.wordpressInstallation.name}
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+      <div className="grid grid-cols-3 gap-3">
+        {domains.length > 0 ?
+            domains.map((domain, d) => (
+              <Card hoverable>
+                <span className="text-white text-opacity-85 font-semibold">
+                  {domain.wordpressInstallation.name}
+                </span>
+                <span>{domain.domainName}</span>
+                {
+                  true &&
+                    <div className="rounded text-[10px] self-start border mt-2 px-2">
+                      SSL
+                    </div>
+                }
+              </Card>
+            )
         ) : (
           <Alert>
             <AlertTitle>Cannot find any domain</AlertTitle>
