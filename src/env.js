@@ -27,12 +27,14 @@ export const env = createEnv({
     MYSQL_PUBLIC_PORT: process.env.MYSQL_PUBLIC_PORT,
     MYSQL_CONTAINER_NAME: process.env.MYSQL_CONTAINER_NAME,
     NGINX_CONTAINER_NAME: process.env.NGINX_CONTAINER_NAME,
+    PUBLIC_URL: process.env.PUBLIC_URL,
   },
   /**
    * Specify your server-side environment variables schema here. This way you can ensure the app
    * isn't built with invalid env vars.
    */
   server: {
+    PUBLIC_URL: z.string(),
     DOCKER_BASE_PATH: z.string(),
     DOCKER_NETWORK_NAME: z.string(),
     MYSQL_ROOT_PASSWORD: z.string(),

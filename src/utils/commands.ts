@@ -1,3 +1,5 @@
+import { ContainerActions } from "~/server/routers/docker";
+
 export type CreateWordPressCMD = {
   uniqueName: string;
   networkName: string;
@@ -51,6 +53,10 @@ const Commands = {
       `docker network ls --filter name=${name} --format "{{.Name}}"`,
     checkPort: (port: number | string) =>
       `docker ps --filter "publish=${port}" --format "{{.Names}}"`,
+    checkStatus: (name: string) =>
+      `docker ps -a --filter "name=${name}" --format "{{.Status}}"`,
+    updateContainer: (name: string, action: ContainerActions) =>
+      `docker ${action} ${name}`,
   },
   MySQL: {
     create: ({

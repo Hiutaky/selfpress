@@ -68,7 +68,7 @@ const createNewWordPressInstance = async ({
         Commands.WordPress.installWpCli({ uniqueName }),
       );
       if (installResponse) {
-        for(let i = 0; i < retries; i++) {
+        for (let i = 0; i < retries; i++) {
           try {
             const setupResponse = await runCommandWithLogging(
               Commands.WordPress.setupWpCli({
@@ -90,7 +90,7 @@ const createNewWordPressInstance = async ({
               );
             }
             return setupResponse;
-          } catch ( error ) {
+          } catch (error) {
             console.error(
               `Attempt ${i + 1}: Error executing WP Setup command: ${error}`,
             );
@@ -98,10 +98,7 @@ const createNewWordPressInstance = async ({
               console.log(`Retrying in ${delay / 1000} seconds...`);
               await new Promise((resolve) => setTimeout(resolve, delay)); // Wait before retrying
             } else {
-              console.error(
-                `Error during wordpress creation process`,
-                error,
-              );
+              console.error(`Error during wordpress creation process`, error);
               return {
                 success: false,
                 message: `Error creating wp instance"`,

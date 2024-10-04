@@ -5,12 +5,19 @@ const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     spacing: {
-      '1': '4px',
-      '2': '6px',
-      '3': '8px',
-      '4': '14px',
-      '5': '18px',
-      '6': '20px'
+      "1": "4px",
+      "2": "6px",
+      "3": "8px",
+      "4": "14px",
+      "5": "18px",
+      "6": "20px",
+      "7": "24px",
+    },
+    fontSize: {
+      xs: "0.95em",
+      sm: "1em",
+      md: "1.2em",
+      lg: "1.4em",
     },
     extend: {
       colors: {

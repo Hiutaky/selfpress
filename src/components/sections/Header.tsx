@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
 import Icon from "../shared/Icon";
 import { api } from "~/trpc/react";
+import Image from "next/image";
 
 type Props = {
   children?: ReactNode;
@@ -38,8 +39,8 @@ const Header: React.FC<Props> = ({}) => {
       label: "Domains",
     },
     {
-      href: "database",
-      label: "Database",
+      href: "services",
+      label: "Services",
     },
     {
       href: "terminal",
@@ -60,7 +61,7 @@ const Header: React.FC<Props> = ({}) => {
         adminPassword: "Cercaz2016?",
         siteDescription: "Just a demo site",
         adminEmail: "hiutaky@gmail.com",
-        siteName: "Test site"
+        siteName: "Test site",
       },
       dockerConfig: {
         //containerName: 'firstcontainer',
@@ -70,10 +71,19 @@ const Header: React.FC<Props> = ({}) => {
   };
 
   return (
-    <div className="w-full flex flex-col gap-2 text-white p-4 pb-[0px] bg-stone-950 border-b-[1px]">
+    <div className="w-full flex flex-col gap-2 text-white p-4 pb-[0px] bg-neutral-950 border-b-[1px] border-neutral-800">
       <div className="flex flex-row justify-between items-center">
-        <Link href={"/"}>
-          <h1 className="text-xl font-semibold">SelfPress</h1>
+        <Link
+          href={"/"}
+          className="flex flex-row gap-3 items-center text-lg font-semibold"
+        >
+          <Image
+            alt="Selfpress Logo"
+            src="/assets/images/logo.webp"
+            width={30}
+            height={30}
+          />
+          Selfpress
         </Link>
         <Button onClick={() => createWordpress()}>
           <Icon>add</Icon>
@@ -82,11 +92,13 @@ const Header: React.FC<Props> = ({}) => {
       </div>
       <ul className="flex flex-row text-xs">
         {menu.map((item, i) => (
-          <li className={`py-3  ${active === item.href ? "border-b-2 border-white" : "text-opacity-75"}`}>
+          <li
+            key={i}
+            className={`py-3  ${active === item.href ? "border-b-2 border-white" : "text-opacity-75"}`}
+          >
             <Link
-              className={`hover:text-opacity-100 text-opacity-50 transition-all rounded text-white ${active === item.href && 'text-opacity-100'} hover:bg-slate-50 hover:bg-opacity-10 x py-2 px-3`}
+              className={`hover:text-opacity-100 text-opacity-50 transition-all rounded text-white ${active === item.href && "!text-opacity-100"} hover:bg-slate-50 hover:bg-opacity-10 x py-2 px-3`}
               href={`/${item.href}`}
-              key={i}
             >
               {item.label}
             </Link>

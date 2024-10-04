@@ -17,6 +17,7 @@ model WordPressInstallation {
   status      String   // Stato dell'installazione (e.g. running, stopped, etc.)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  imagePath   String?
   
   dockerConfigId Int?
   dockerConfig   DockerConfig? @relation(fields: [dockerConfigId], references: [id])

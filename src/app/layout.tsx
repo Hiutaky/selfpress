@@ -5,6 +5,7 @@ import Header from "~/components/sections/Header";
 import { TRPCReactProvider } from "~/trpc/react";
 import { cookies } from "next/headers";
 import "./material.css";
+import { TooltipProvider } from "~/components/ui/tooltip";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,13 +31,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} text-white text-opacity-60 text-xs bg-stone-950 antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} text-white text-opacity-60 text-xs bg-black antialiased`}
       >
         <TRPCReactProvider cookies={cookies().toString()}>
           <div className="flex flex-col justify-center items-center">
             <Header />
             <div className="container p-6 rounded shadow-sm">
-              {children}
+              <TooltipProvider>{children}</TooltipProvider>
             </div>
           </div>
         </TRPCReactProvider>

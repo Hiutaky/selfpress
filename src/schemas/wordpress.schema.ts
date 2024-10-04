@@ -3,7 +3,11 @@ import { z } from "zod";
 export const installationStatus = z.enum(["RUNNING", "STOPPED", "ERROR"]);
 export type InstallationStatus = z.infer<typeof installationStatus>;
 
-// Schema per la creazione di una nuova installazione WordPress
+export const createSitePreviewSchema = z.object({
+  id: z.number(),
+  url: z.string(),
+});
+
 export const createWordPressInstallationSchema = z.object({
   name: z.string().min(3),
   domain: z.string().url().default("http://localhost"),
@@ -22,7 +26,6 @@ export const createWordPressInstallationSchema = z.object({
   }),
 });
 
-// Schema per la modifica di un'installazione WordPress
 export const updateWordPressInstallationSchema = z.object({
   id: z.number(),
   name: z.string().optional(),
@@ -52,7 +55,6 @@ export const updateWordPressInstallationSchema = z.object({
     .optional(),
 });
 
-// Schema per la lettura e cancellazione di un'installazione
 export const getOrDeleteWordPressInstallationSchema = z.object({
   id: z.number().or(z.string()),
 });

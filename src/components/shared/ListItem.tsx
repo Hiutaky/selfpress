@@ -15,9 +15,9 @@ const ListItem: React.FC<ListProps> = ({
 }) => {
   const [show, setShow] = useState<boolean>(false);
   return (
-    <div className="flex flex-row justify-between items-center">
-      <span className="font-semibold">{label}</span>
-      <div className="flex flex-row gap-2 items-center">
+    <div className="flex font-medium flex-col gap-1 justify-between">
+      <span className="text-neutral-400">{label}</span>
+      <div className="flex font-semibold flex-row gap-2 items-center text-stone-200">
         <span
           className={`text-right ${type === "password" && !show ? "text-stone-800 bg-stone-800 px-10" : ""} rounded`}
         >

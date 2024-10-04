@@ -19,12 +19,14 @@ SelfPress is a multi-instance WordPress management system that allows users to m
 ## Installation
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/Hiutaky/selfpress.git
    cd selfpress
    ```
 
 2. **Install dependencies**:
+
    ```bash
    bun install
    ```
@@ -32,6 +34,7 @@ SelfPress is a multi-instance WordPress management system that allows users to m
 3. **Set up environment variables**: Copy `.env.default` to `.env` in the root directory and customize as you prefer.
 
 4. **Set up Prisma DB**:
+
    ```bash
    bunx prisma db push
    bunx prisma db generate

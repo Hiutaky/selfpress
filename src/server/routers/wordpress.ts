@@ -46,6 +46,23 @@ export const wordpressRouter = router({
             siteName: wordpressSettings.siteName,
           },
         });
+
+        const call = await fetch(
+          `http://${env.PUBLIC_URL}:3000/api/screenshot`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              url: installationData.domain,
+              id: uniqueContainerName,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        const imagePath = (await call.text()).replaceAll('"', "");
+
         if (!response)
           return new TRPCError({
             message: "Unable to create wordpress instance",
@@ -74,6 +91,7 @@ export const wordpressRouter = router({
           data: {
             path: `${process.cwd()}/${env.DOCKER_BASE_PATH}/${uniqueContainerName}:var/www/html`,
             dockerId: uniqueContainerName,
+            imagePath: imagePath,
             ...installationData,
             dockerConfigId: dockerConfigCreated.id,
             wordpressSettingsId: wordpressSettingsCreated.id,
