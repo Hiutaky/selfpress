@@ -14,7 +14,7 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "border-[1px] border-gray-500 text-gray-500 hover:text-white border-input shadow-sm hover:bg-white hover:bg-opacity-10",
+          "border-[1px] border-neutral-400 text-neutral-400 hover:text-white border-input shadow-sm hover:bg-white hover:bg-opacity-10",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -41,7 +41,10 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'outline', size = 'sm', asChild = false, ...props }, ref) => {
+  (
+    { className, variant = "outline", size = "sm", asChild = false, ...props },
+    ref,
+  ) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp

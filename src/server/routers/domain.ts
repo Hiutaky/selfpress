@@ -1,5 +1,5 @@
 import { createDomainSchema } from "~/schemas/domain.schema";
-import { publicProcedure, router } from "../trpc";
+import { protectedProcedure, router } from "../trpc";
 import { execPromise, execPromiseStdout } from "~/utils/exec";
 import Commands from "~/utils/commands";
 import { env } from "~/env";
@@ -10,9 +10,12 @@ import { TRPCError } from "@trpc/server";
 const cwd = process.cwd();
 
 export const domainRouter = router({
-  create: publicProcedure
+  create: protectedProcedure
     .input(createDomainSchema)
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.session?.user.id) {
+        return;
+      }
       const { wpContainerName, domain } = input;
       //check if nginx container not exist yet, then create it
       const cleanURL = domain
@@ -28,7 +31,10 @@ export const domainRouter = router({
 
       //writing nginx conf file
       let file = await readFile(
-        path.join(cwd, input.ssl ? "/default-ssl.conf" : "/default.conf"),
+        path.join(
+          cwd,
+          input.ssl ? "defaults/nginx-ssl.conf" : "defaults/nginx.conf",
+        ),
         "utf-8",
       );
       file = file
@@ -82,6 +88,7 @@ export const domainRouter = router({
             input.domain,
           ),
         );
+        const { id } = ctx.session.user;
         //create new domain entity
         const create = await ctx.db.domain.create({
           data: {
@@ -93,6 +100,7 @@ export const domainRouter = router({
                 id: input.wordpressId,
               },
             },
+            userId: id,
           },
         });
         //update public url on wordpressSettings
@@ -114,7 +122,7 @@ export const domainRouter = router({
         return false;
       }
     }),
-  readAll: publicProcedure.query(async ({ ctx }) => {
+  readAll: protectedProcedure.query(async ({ ctx }) => {
     const domains = await ctx.db.domain.findMany({
       include: {
         wordpressInstallation: true,

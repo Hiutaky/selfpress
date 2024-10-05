@@ -3,14 +3,6 @@ import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/server";
 import AddDomainForm from "./_components/AddDomainForm";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
-import Link from "next/link";
 import Card from "~/components/shared/Card";
 
 export default async function Page() {
@@ -25,21 +17,20 @@ export default async function Page() {
         </AddDomainForm>
       </div>
       <div className="grid grid-cols-3 gap-3">
-        {domains.length > 0 ?
-            domains.map((domain, d) => (
-              <Card hoverable>
-                <span className="text-white text-opacity-85 font-semibold">
-                  {domain.wordpressInstallation.name}
-                </span>
-                <span>{domain.domainName}</span>
-                {
-                  true &&
-                    <div className="rounded text-[10px] self-start border mt-2 px-2">
-                      SSL
-                    </div>
-                }
-              </Card>
-            )
+        {domains.length > 0 ? (
+          domains.map((domain, d) => (
+            <Card hoverable key={d}>
+              <span className="text-white text-opacity-85 font-semibold">
+                {domain.wordpressInstallation.name}
+              </span>
+              <span>{domain.domainName}</span>
+              {true && (
+                <div className="rounded text-[10px] self-start border mt-2 px-2">
+                  SSL
+                </div>
+              )}
+            </Card>
+          ))
         ) : (
           <Alert>
             <AlertTitle>Cannot find any domain</AlertTitle>

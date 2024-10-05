@@ -1,6 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { ReactNode, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -41,9 +43,12 @@ const formSchema = z.object({
 
 const AddNewWordpressForm: React.FC<Props> = ({ children }) => {
   const [loading, setLoading] = useState(false);
+  const session = useSession();
+  const router = useRouter();
   const create = api.wordpress.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
       setLoading(false);
+      if (data) router.push(`/applications/${data.id}`);
     },
     onError: (error) => {
       setLoading(false);
@@ -56,9 +61,10 @@ const AddNewWordpressForm: React.FC<Props> = ({ children }) => {
       name: "",
       wordpressSettings: {
         siteName: "",
-        adminEmail: "",
+        adminEmail: session.data?.user.email,
         adminPassword: "",
-        adminName: "",
+        adminName: session.data?.user.username,
+        siteDescription: "",
       },
     },
     resolver: zodResolver(formSchema),
