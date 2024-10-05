@@ -9,6 +9,7 @@
  */
 
 defined('ABSPATH') or die('No script kiddies please!');
+
 add_action('init', 'bta_handle_authentication');
 
 function bta_handle_authentication() {

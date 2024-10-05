@@ -1,4 +1,4 @@
-import { publicProcedure, router } from "../trpc";
+import { protectedProcedure, router } from "../trpc";
 import {
   createWordPressInstallationSchema,
   updateWordPressInstallationSchema,
@@ -13,17 +13,16 @@ import { cwd } from "process";
 
 // Router tRPC per WordPressInstallations
 export const wordpressRouter = router({
-  create: publicProcedure
+  create: protectedProcedure
     .input(createWordPressInstallationSchema)
     .mutation(async ({ ctx, input }) => {
       const { dockerConfig, wordpressSettings, ...installationData } = input;
-
-      const rand = randomBytes(8).toString("hex");
-      const dbName = `db_${rand}`;
-      const dbUser = `user_${rand}`;
+      if (!ctx.session?.user) throw new TRPCError({ code: "UNAUTHORIZED" });
       const dbPassword = randomBytes(16).toString("hex");
       const uniqueUuid = randomBytes(2).toString("hex");
-      const uniqueContainerName = `wp-${uniqueUuid}`;
+      const uniqueContainerName = `wp_${uniqueUuid}`;
+      const dbName = `db_${uniqueContainerName}`;
+      const dbUser = `user_${uniqueContainerName}`;
       let port = 8080;
 
       while (await Docker.isPortUsed(port)) port++;
@@ -64,7 +63,7 @@ export const wordpressRouter = router({
         const imagePath = (await call.text()).replaceAll('"', "");
 
         if (!response)
-          return new TRPCError({
+          throw new TRPCError({
             message: "Unable to create wordpress instance",
             code: "INTERNAL_SERVER_ERROR",
           });
@@ -95,6 +94,7 @@ export const wordpressRouter = router({
             ...installationData,
             dockerConfigId: dockerConfigCreated.id,
             wordpressSettingsId: wordpressSettingsCreated.id,
+            userId: ctx.session.user.id,
           },
         });
 
@@ -106,7 +106,7 @@ export const wordpressRouter = router({
     }),
 
   // Leggi una singola installazione di WordPress
-  read: publicProcedure
+  read: protectedProcedure
     .input(getOrDeleteWordPressInstallationSchema)
     .query(async ({ ctx, input }) => {
       return await ctx.db.wordPressInstallation.findUnique({
@@ -119,7 +119,7 @@ export const wordpressRouter = router({
     }),
 
   // Leggi tutte le installazioni di WordPress
-  readAll: publicProcedure.query(async ({ ctx }) => {
+  readAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.wordPressInstallation.findMany({
       include: {
         dockerConfig: true,
@@ -129,7 +129,7 @@ export const wordpressRouter = router({
   }),
 
   // Modifica un'installazione di WordPress
-  update: publicProcedure
+  update: protectedProcedure
     .input(updateWordPressInstallationSchema)
     .mutation(async ({ ctx, input }) => {
       const { id, dockerConfig, wordpressSettings, ...updateData } = input;
@@ -166,7 +166,7 @@ export const wordpressRouter = router({
     }),
 
   // Elimina un'installazione di WordPress
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(getOrDeleteWordPressInstallationSchema)
     .mutation(async ({ ctx, input }) => {
       // Trova l'installazione

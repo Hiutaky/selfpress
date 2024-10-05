@@ -22,6 +22,7 @@ export type SetupWpCliCMD = {
   adminName: string;
   adminEmail: string;
   adminPassword: string;
+  redisContainer: string;
 };
 export type CreateMysqlCMD = {
   mysqlName: string;
@@ -45,6 +46,9 @@ export type CreateDbAndUserCMD = {
  * Commands Object
  */
 const Commands = {
+  Common: {
+    getPublicIp: () => `curl checkip.amazonaws.com`,
+  },
   Docker: {
     createNetwork: (name: string) => `docker network create ${name}`,
     checkName: (name: string) =>
@@ -57,6 +61,7 @@ const Commands = {
       `docker ps -a --filter "name=${name}" --format "{{.Status}}"`,
     updateContainer: (name: string, action: ContainerActions) =>
       `docker ${action} ${name}`,
+    getLogs: (name: string) => `docker logs ${name}`,
   },
   MySQL: {
     create: ({
@@ -101,6 +106,14 @@ const Commands = {
     reload: (containerName: string) =>
       `docker exec ${containerName} nginx -s reload`,
   },
+  PhpMyAdmin: {
+    create: (name: string, mySqlName: string, networkName: string) =>
+      `docker run --name ${name} -d --network ${networkName}  --link ${mySqlName}:db   -e PMA_HOST=${mySqlName}   -p 8079:80   phpmyadmin`,
+  },
+  Redis: {
+    create: (name: string, networkName: string) =>
+      `docker run -d   --name ${name}   --network ${networkName}   redis:latest`,
+  },
   WordPress: {
     create: ({
       uniqueName,
@@ -131,15 +144,29 @@ const Commands = {
       adminName,
       adminEmail,
       adminPassword,
+      redisContainer,
     }: SetupWpCliCMD) => `docker exec ${uniqueName} /bin/bash -c "
             su -s /bin/bash www-data -c 'wp core install --url=\\"http://localhost:${port}\\" --title=\\"${siteName}\\" --admin_user=\\"${adminName}\\" --admin_password=\\"${adminPassword}\\" --admin_email=\\"${adminEmail}\\" --skip-email';
             su -s /bin/bash www-data -c 'wp option update siteurl \\"http://localhost:${port}\\"';
             su -s /bin/bash www-data -c 'wp option update home \\"http://localhost:${port}\\"';
             su -s /bin/bash www-data -c 'wp option update blogname \\"${siteName}\\"';
             su -s /bin/bash www-data -c 'wp option update blogdescription \\"${siteDescription}\\"';
+            su -s /bin/bash www-data -c 'wp config set WP_REDIS_HOST  \\"${redisContainer}\\"';
             "`,
+    execWpCliCommand: (
+      name: string,
+      command: string,
+    ) => `docker exec ${name} /bin/bash -c "
+            su -s /bin/bash www-data -c '${command}';
+    "`,
     copySafepressPlugin: (uniqueName: string) =>
       `docker cp ./wordpress/selfpress-utils.php ${uniqueName}:/var/www/html/wp-content/plugins/selfpress-utils.php`,
+    installRedisPlugin: (
+      containerName: string,
+    ) => `docker exec ${containerName} /bin/bash -c "
+            su -s /bin/bash www-data -c 'wp plugin install redis-cache';
+            su -s /bin/bash www-data -c 'wp plugin activate redis-cache';
+          "`,
     activateSafepressPlugin: (uniqueName: string) =>
       `docker exec -t ${uniqueName} /bin/bash -c "su -s /bin/bash www-data -c 'wp plugin activate selfpress-utils'"`,
     replaceUrls: (containerName: string, oldUrl: string, newUrl: string) =>

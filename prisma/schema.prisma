@@ -18,6 +18,8 @@ model WordPressInstallation {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   imagePath   String?
+  userId      Int
+  user        User     @relation("userInstallations", references: [id], fields: [userId])
   
   dockerConfigId Int?
   dockerConfig   DockerConfig? @relation(fields: [dockerConfigId], references: [id])
@@ -31,11 +33,11 @@ model WordPressInstallation {
 model DockerConfig {
   id          Int      @id @default(autoincrement())
   containerName String  @unique
-  image       String   // Immagine Docker utilizzata (e.g. wordpress:latest)
-  ports       String   // Mappatura delle porte (e.g. "8080:80")
-  volumes     String   // Mappatura dei volumi (e.g. "/var/www/html")
+  image       String
+  ports       String   
+  volumes     String   
   environment String   // Variabili d'ambiente Docker (JSON o formato string)
-  restartPolicy String @default("always")  // Politica di riavvio del container (e.g. "always", "on-failure")
+  restartPolicy String @default("always")
   networkName String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -46,18 +48,18 @@ model DockerConfig {
 model WordPressSettings {
   id          Int      @id @default(autoincrement())
   siteDescription String
-  siteName    String   // Nome del sito WordPress
-  siteUrl     String   // URL del sito WordPress
+  siteName    String
+  siteUrl     String 
   
-  adminEmail  String   // Email dell'admin
+  adminEmail  String  
   adminName   String
   adminPassword String
   
-  dbHost      String   // Host del database
-  dbName      String   // Nome del database
-  dbUser      String   // Utente del database
-  dbPassword  String   // Password del database
-  tablePrefix String   @default("WP_")   // Prefisso delle tabelle di WordPress
+  dbHost      String
+  dbName      String
+  dbUser      String
+  dbPassword  String 
+  tablePrefix String   @default("WP_")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   empty       String?
@@ -74,4 +76,18 @@ model Domain {
   wordpressInstallation   WordPressInstallation @relation("wordpressDomains", fields: [wordpressInstallationId], references: [id])
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
+  userId                 Int
+  user                   User @relation("userDomains", fields: [userId], references: [id])
+}
+
+model User {
+  id          Int @id @default(autoincrement())
+  username    String  @unique
+  password    String
+  email       String  @unique
+  firstname   String?
+  lastname    String?
+  avatarPath  String?
+  installations WordPressInstallation[] @relation("userInstallations")
+  domains       Domain[] @relation("userDomains")
 }

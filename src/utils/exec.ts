@@ -3,7 +3,7 @@ import { promisify } from "util";
 
 export const execPromise = promisify(exec);
 
-export const execPromiseStdout = (command: string) => {
+export const execPromiseStdout = (command: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
       if (error) {

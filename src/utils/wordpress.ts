@@ -34,9 +34,6 @@ const createNewWordPressInstance = async ({
   uniqueName,
   settings,
 }: CreateWordPressInstance) => {
-  const mysqlExist = await MySQL.checkForMysqlContainer();
-  if (!mysqlExist) await MySQL.createMysqlContainer();
-
   const result = await MySQL.createMysqlDatabase({
     dbName,
     dbUser,
@@ -44,7 +41,6 @@ const createNewWordPressInstance = async ({
   });
 
   if (result && !result.success) {
-    console.log(result.message, result.error);
     return false;
   }
   const retries = 5;
@@ -79,6 +75,7 @@ const createNewWordPressInstance = async ({
                 siteDescription: settings.siteDescription,
                 siteName: settings.siteName,
                 uniqueName,
+                redisContainer: env.REDIS_CONTAINER_NAME,
               }),
             );
             if (setupResponse) {
@@ -87,6 +84,9 @@ const createNewWordPressInstance = async ({
               );
               await runCommandWithLogging(
                 Commands.WordPress.activateSafepressPlugin(uniqueName),
+              );
+              await runCommandWithLogging(
+                Commands.WordPress.installRedisPlugin(uniqueName),
               );
             }
             return setupResponse;

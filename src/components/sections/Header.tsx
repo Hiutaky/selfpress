@@ -5,8 +5,14 @@ import { ReactNode, useMemo } from "react";
 import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
 import Icon from "../shared/Icon";
-import { api } from "~/trpc/react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 type Props = {
   children?: ReactNode;
@@ -18,12 +24,7 @@ type MenuItem = {
 };
 const Header: React.FC<Props> = ({}) => {
   const path = usePathname();
-
-  const create = api.wordpress.create.useMutation({
-    onSuccess(data) {
-      console.log(data);
-    },
-  });
+  const session = useSession();
 
   const menu: MenuItem[] = [
     {
@@ -52,26 +53,8 @@ const Header: React.FC<Props> = ({}) => {
     return path.split("/").at(1);
   }, [path]);
 
-  const createWordpress = () => {
-    create.mutate({
-      domain: "http://localhost",
-      name: "Firtst",
-      wordpressSettings: {
-        adminName: "hiutaky",
-        adminPassword: "Cercaz2016?",
-        siteDescription: "Just a demo site",
-        adminEmail: "hiutaky@gmail.com",
-        siteName: "Test site",
-      },
-      dockerConfig: {
-        //containerName: 'firstcontainer',
-        restartPolicy: "always",
-      },
-    });
-  };
-
   return (
-    <div className="w-full flex flex-col gap-2 text-white p-4 pb-[0px] bg-neutral-950 border-b-[1px] border-neutral-800">
+    <div className="w-full flex flex-col gap-2 text-white p-5 pb-[0px] bg-neutral-950 border-b-[1px] border-neutral-800">
       <div className="flex flex-row justify-between items-center">
         <Link
           href={"/"}
@@ -85,10 +68,38 @@ const Header: React.FC<Props> = ({}) => {
           />
           Selfpress
         </Link>
-        <Button onClick={() => createWordpress()}>
-          <Icon>add</Icon>
-          Create
-        </Button>
+        <div className="flex flex-row gap-3">
+          {session.data?.user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button>
+                  <Icon>add</Icon>
+                  Create
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem>
+                  <Icon>grid_view</Icon>
+                  Application
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Icon>language</Icon>
+                  Domain
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          {session.data?.user ? (
+            <Button>{session.data.user.username}</Button>
+          ) : (
+            <Link href={"/signin"}>
+              <Button>
+                <Icon>person</Icon>
+                Sign In
+              </Button>
+            </Link>
+          )}
+        </div>
       </div>
       <ul className="flex flex-row text-xs">
         {menu.map((item, i) => (

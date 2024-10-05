@@ -7,9 +7,18 @@ import ContainerStatus from "~/components/shared/ContainerStatus";
 import Heading from "~/components/shared/Heading";
 import Icon from "~/components/shared/Icon";
 import ListItem from "~/components/shared/ListItem";
+import Logger from "~/components/shared/Logger";
 import WebsitePreview from "~/components/shared/WebsitePreview";
+import WPCli from "~/components/shared/WPCli";
 import { Button } from "~/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 import { api } from "~/trpc/server";
+import Commands from "~/utils/commands";
+import { execPromise } from "~/utils/exec";
 
 type Props = {
   params: {
@@ -33,6 +42,15 @@ export default async function Page(req: Props) {
     return `${wordpressSettings?.siteUrl}/wp-admin?accessToken=${btoa(`${wordpressSettings?.adminName}:${wordpressSettings?.adminPassword}`)}`;
   };
 
+  const { volumes } = wordPress.dockerConfig;
+
+  const useExecStdout = async (command: string) => {
+    "use server";
+    return await execPromise(
+      Commands.WordPress.execWpCliCommand(dockerConfig.containerName, command),
+    );
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-row justify-between items-center gap-3">
@@ -43,11 +61,17 @@ export default async function Page(req: Props) {
             Delete
           </Button>
           <Link href={authLink()} target="_blank">
-            <Button variant={"secondary"}>
+            <Button>
               <Icon>admin_panel_settings</Icon>
               Admin
             </Button>
           </Link>
+          <Logger containerName={wordPress.dockerConfig.containerName}>
+            <Button>
+              <Icon>bug_report</Icon>
+              Logger
+            </Button>
+          </Logger>
           <Link href={wordPress.domain} target="_blank">
             <Button>
               <Icon>open_in_new</Icon>
@@ -57,7 +81,7 @@ export default async function Page(req: Props) {
         </div>
       </div>
       <Card>
-        <div className="grid grid-cols-[1fr_2fr] gap-7">
+        <div className="grid sm:grid-cols-2 xl:grid-cols-[1fr_2fr] gap-7">
           <WebsitePreview
             imagePath={wordPress.imagePath ?? false}
             siteId={wordPress.id}
@@ -90,6 +114,7 @@ export default async function Page(req: Props) {
           </div>
         </div>
       </Card>
+      <WPCli name={dockerConfig.containerName} execStdout={useExecStdout} />
       <div className="grid grid-cols-2 gap-5">
         <Box title="Main Details">
           {/** MAIN DETAILS */}
@@ -105,8 +130,18 @@ export default async function Page(req: Props) {
           </ListItem>
           <ListItem label="Local Domain">{wordPress?.domain}</ListItem>
           <ListItem label="Path">
-            {wordPress.dockerConfig?.volumes}/
-            {wordPress.dockerConfig?.containerName}
+            <Tooltip>
+              <TooltipTrigger>
+                {volumes?.split("/").length > 4
+                  ? volumes
+                      .split("/")
+                      .map((path, i) => (i > 1 && i < 5 ? "..." : path))
+                      .join("/")
+                  : volumes}
+                /{wordPress.dockerConfig?.containerName}
+              </TooltipTrigger>
+              <TooltipContent>{volumes}</TooltipContent>
+            </Tooltip>
           </ListItem>
           <ListItem label="Created">
             {new Date(wordPress.createdAt).toLocaleString()}
@@ -118,7 +153,11 @@ export default async function Page(req: Props) {
         <Box title="Access details">
           <ListItem label="Email">{wordpressSettings?.adminEmail}</ListItem>
           <ListItem label="Username">{wordpressSettings?.adminName}</ListItem>
-          <ListItem label="Password" type="password">
+          <ListItem
+            label="Password"
+            type="password"
+            copy={wordpressSettings?.adminPassword}
+          >
             {wordpressSettings?.adminPassword}
           </ListItem>
           <ListItem label="Site Name">{wordpressSettings?.siteName}</ListItem>
@@ -150,7 +189,11 @@ export default async function Page(req: Props) {
           <ListItem label="DB Host">{wordpressSettings?.dbHost}</ListItem>
           <ListItem label="DB Name">{wordpressSettings?.dbName}</ListItem>
           <ListItem label="DB User">{wordpressSettings?.dbUser}</ListItem>
-          <ListItem label="DB Password" type="password">
+          <ListItem
+            label="DB Password"
+            type="password"
+            copy={wordpressSettings?.dbPassword}
+          >
             {wordpressSettings?.dbPassword}
           </ListItem>
           <ListItem label="Last Update">
