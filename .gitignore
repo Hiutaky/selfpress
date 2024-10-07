@@ -38,8 +38,16 @@ next-env.d.ts
 */dev.db
 *.db
 
-installations/*
-nginx-configs/*
+applications/data/*
+applications/confs/nginx/certs/*
+applications/confs/nginx/conf.d/*
+applications/confs/sftp/*
+
+
+!applications/data/.gitkeep
+!applications/confs/nginx/conf.d/.gitkeep
+!applications/confs/nginx/certs/.gitkeep
+!applications/confs/sftp/.gitkeep
 
 .env
 

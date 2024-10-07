@@ -32,6 +32,7 @@ export const env = createEnv({
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     PHPMYADMIN_CONTAINER_NAME: process.env.PHPMYADMIN_CONTAINER_NAME,
     PUBLIC_IP: process.env.PUBLIC_IP,
+    SFTP_CONTAINER_NAME: process.env.SFTP_CONTAINER_NAME,
     REDIS_CONTAINER_NAME: process.env.REDIS_CONTAINER_NAME,
   },
   /**
@@ -65,6 +66,7 @@ export const env = createEnv({
         "You forgot to change the default URL",
       ),
     PHPMYADMIN_CONTAINER_NAME: z.string(),
+    SFTP_CONTAINER_NAME: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),

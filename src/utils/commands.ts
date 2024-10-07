@@ -101,7 +101,7 @@ const Commands = {
           --network ${networkName} \
           -p 80:80 \
           -p 443:443 \
-          -v $(pwd)/nginx-configs:/etc/nginx/conf.d \
+          -v $(pwd)/applications/confs/nginx/conf.d:/etc/nginx/conf.d \
           nginx:latest`,
     reload: (containerName: string) =>
       `docker exec ${containerName} nginx -s reload`,
@@ -113,6 +113,15 @@ const Commands = {
   Redis: {
     create: (name: string, networkName: string) =>
       `docker run -d   --name ${name}   --network ${networkName}   redis:latest`,
+  },
+  SFTP: {
+    addUser: (user:string, password: string) => `echo -e "${user}:${password}" >> $(pwd)/applications/confs/sftp/users.conf`,
+    create: (containerName: string) => `cp $(pwd)/defaults/sftp/users.conf $(pwd)/applications/confs/sftp/users.conf &&
+      docker run --name ${containerName} \
+        -v $(pwd)/applications/conf/sftp/users.conf:/etc/sftp/users.conf:ro \
+        -v $(pwd)/applications/data:/home \
+        -p 2222:22 -d atmoz/sftp
+    `
   },
   WordPress: {
     create: ({
@@ -128,7 +137,7 @@ const Commands = {
     }: CreateWordPressCMD) => `sudo docker run -d --name ${uniqueName} \
             --network ${networkName} \
             -p ${port}:80 \
-            -v ${dockerPath}/${uniqueName}:/var/www/html \
+            -v $(pwd)/applications/data/${uniqueName}/wp:/var/www/html \
             -e WORDPRESS_DB_HOST=${mysqlContainer}:${mysqlPort} \
             -e WORDPRESS_DB_USER=${dbUser} \
             -e WORDPRESS_DB_PASSWORD=${dbPassword} \
@@ -160,7 +169,7 @@ const Commands = {
             su -s /bin/bash www-data -c '${command}';
     "`,
     copySafepressPlugin: (uniqueName: string) =>
-      `docker cp ./wordpress/selfpress-utils.php ${uniqueName}:/var/www/html/wp-content/plugins/selfpress-utils.php`,
+      `docker cp ./defaults/wordpress/selfpress-utils.php ${uniqueName}:/var/www/html/wp-content/plugins/selfpress-utils.php`,
     installRedisPlugin: (
       containerName: string,
     ) => `docker exec ${containerName} /bin/bash -c "

@@ -5,37 +5,32 @@ import MySQL from "./mysql";
 import Nginx from "./nginx";
 
 export const maybeInitializeSelfpress = async () => {
-  //initialize mysql common contaienr
-  const mysql = await execPromiseStdout(
-    Commands.Docker.checkName(env.MYSQL_CONTAINER_NAME),
-  );
-  if (!mysql) MySQL.createMysqlContainer();
-
-  //initialize nginx common container
-  const nginx = await execPromiseStdout(
-    Commands.Docker.checkName(env.NGINX_CONTAINER_NAME),
-  );
-  if (!nginx) await Nginx.initialize();
-
-  //initialize phpMyAdmin and connect with mysqlContainer
-  const phpMyAdmin = await execPromiseStdout(
-    Commands.Docker.checkName(env.PHPMYADMIN_CONTAINER_NAME),
-  );
-  if (!phpMyAdmin)
-    await execPromiseStdout(
+  const toCheck = {
+    [env.MYSQL_CONTAINER_NAME]: async () => await MySQL.createMysqlContainer(),
+    [env.NGINX_CONTAINER_NAME]: async () => await Nginx.initialize(),
+    [env.PHPMYADMIN_CONTAINER_NAME]: async () => await execPromiseStdout(
       Commands.PhpMyAdmin.create(
         env.PHPMYADMIN_CONTAINER_NAME,
         env.MYSQL_CONTAINER_NAME,
         env.DOCKER_NETWORK_NAME,
       ),
-    );
-
-  //initialize Redis server
-  const redis = await execPromiseStdout(
-    Commands.Docker.checkName(env.REDIS_CONTAINER_NAME),
-  );
-  if (!redis)
-    await execPromiseStdout(
+    ),
+    [env.REDIS_CONTAINER_NAME]: async () => await execPromiseStdout(
       Commands.Redis.create(env.REDIS_CONTAINER_NAME, env.DOCKER_NETWORK_NAME),
+    ),
+    [env.SFTP_CONTAINER_NAME]: async () => async () => await execPromiseStdout(
+      Commands.SFTP.create(env.SFTP_CONTAINER_NAME),
+    ),
+  }
+
+  Object.keys(toCheck).map( async (key) => {
+    console.log(`Checking Container:`, key);
+    const exist = await execPromiseStdout(
+      Commands.Docker.checkName(key),
     );
+    if( ! exist ) {
+      console.log("Initializing:", key)
+      await toCheck[key]();
+    }
+  })
 };

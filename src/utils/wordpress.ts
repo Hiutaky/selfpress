@@ -1,4 +1,4 @@
-import { runCommandWithLogging } from "./exec";
+import { execPromiseStdout, runCommandWithLogging } from "./exec";
 import MySQL from "./mysql";
 import { env } from "~/env";
 import Commands from "./commands";
@@ -34,11 +34,20 @@ const createNewWordPressInstance = async ({
   uniqueName,
   settings,
 }: CreateWordPressInstance) => {
+  //creating mysql db
   const result = await MySQL.createMysqlDatabase({
     dbName,
     dbUser,
     dbPassword,
   });
+
+  //creating sftp account and folder
+  await execPromiseStdout(
+    Commands.SFTP.addUser(
+      uniqueName,
+      dbPassword
+    )
+  )
 
   if (result && !result.success) {
     return false;
