@@ -13,9 +13,8 @@
     "db:reset": "npx prisma db push --force-reset",
     "wp:reset": "sudo rm -r applications/data && mkdir applications/data",
     "docker:reset": "sudo sh ./scripts/docker-reset.sh",
-    "nginx:reset": "sudo rm -r applications/confs/nginx && mkdir applications/confs/nginx && mkdir applications/confs/nginx/conf.d &&  mkdir applications/confs/nginx/certs",
-    "sftp:reset": "sudo rm -r applications/confs/sftp && mkdir applications/confs/sftp",
-    "reset": "npm run docker:reset && npm run db:reset && npm run wp:reset && npm run nginx:reset && npm run sftp:reset"
+    "folders:reset": "sudo bash ./scripts/folders-reset.sh",
+    "reset": "npm run docker:reset && npm run db:reset && npm run folders:reset"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

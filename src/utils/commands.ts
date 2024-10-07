@@ -116,9 +116,9 @@ const Commands = {
   },
   SFTP: {
     addUser: (user:string, password: string) => `echo -e "${user}:${password}" >> $(pwd)/applications/confs/sftp/users.conf`,
-    create: (containerName: string) => `cp $(pwd)/defaults/sftp/users.conf $(pwd)/applications/confs/sftp/users.conf &&
-      docker run --name ${containerName} \
-        -v $(pwd)/applications/conf/sftp/users.conf:/etc/sftp/users.conf:ro \
+    create: (containerName: string, networkName: string) => `cp $(pwd)/defaults/sftp/users.conf $(pwd)/applications/confs/sftp/users.conf &&
+      docker run --name ${containerName} --network ${networkName} \
+        -v $(pwd)/applications/confs/sftp/users.conf:/etc/sftp/users.conf:ro \
         -v $(pwd)/applications/data:/home \
         -p 2222:22 -d atmoz/sftp
     `

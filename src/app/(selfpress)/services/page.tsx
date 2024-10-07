@@ -82,6 +82,24 @@ export default async function Page() {
             </Logger>
           </div>
         </Box>
+        <Box title="SFTP Server">
+          <div className="grid grid-cols-2">
+            <ListItem label="Container Name">
+              {env.SFTP_CONTAINER_NAME}
+            </ListItem>
+            <ListItem label="Port">
+              ftp://{env.SFTP_CONTAINER_NAME}:2222
+            </ListItem>docke
+          </div>
+          <ListItem label="Status">
+            <ContainerStatus containerName={env.SFTP_CONTAINER_NAME} />
+          </ListItem>
+          <div className="flex flex-row gap-3">
+            <Logger containerName={env.SFTP_CONTAINER_NAME}>
+              <Button>Logger</Button>
+            </Logger>
+          </div>
+        </Box>
       </div>
     </div>
   );
