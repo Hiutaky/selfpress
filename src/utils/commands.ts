@@ -4,7 +4,6 @@ export type CreateWordPressCMD = {
   uniqueName: string;
   networkName: string;
   port: string | number;
-  dockerPath: string;
   mysqlContainer: string;
   mysqlPort: string | number;
   dbUser: string;
@@ -62,6 +61,7 @@ const Commands = {
     updateContainer: (name: string, action: ContainerActions) =>
       `docker ${action} ${name}`,
     getLogs: (name: string) => `docker logs ${name}`,
+    restart: (name: string) => `docker restart ${name}`,
   },
   MySQL: {
     create: ({
@@ -115,20 +115,23 @@ const Commands = {
       `docker run -d   --name ${name}   --network ${networkName}   redis:latest`,
   },
   SFTP: {
-    addUser: (user:string, password: string) => `echo -e "${user}:${password}" >> $(pwd)/applications/confs/sftp/users.conf`,
-    create: (containerName: string, networkName: string) => `cp $(pwd)/defaults/sftp/users.conf $(pwd)/applications/confs/sftp/users.conf &&
+    addUser: (user: string, password: string, containerName: string) =>
+      `echo "${user}:${password}" >> $(pwd)/applications/confs/sftp/users.conf && docker exec ${containerName} create-sftp-user "${user}:${password}"`,
+    create: (
+      containerName: string,
+      networkName: string,
+    ) => `cp $(pwd)/defaults/sftp/users.conf $(pwd)/applications/confs/sftp/users.conf &&
       docker run --name ${containerName} --network ${networkName} \
         -v $(pwd)/applications/confs/sftp/users.conf:/etc/sftp/users.conf:ro \
         -v $(pwd)/applications/data:/home \
         -p 2222:22 -d atmoz/sftp
-    `
+    `,
   },
   WordPress: {
     create: ({
       uniqueName,
       networkName,
       port,
-      dockerPath,
       mysqlContainer,
       mysqlPort,
       dbUser,

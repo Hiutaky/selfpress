@@ -12,12 +12,13 @@ import { api } from "~/trpc/server";
 import AddNewWordpressForm from "./_components/AddNewWordpressForm";
 import Heading from "~/components/shared/Heading";
 import Card from "~/components/shared/Card";
+import BaseLayout from "~/components/sections/BaseLayout";
 
 export default async function Page() {
   const wpInstances = await api.wordpress.readAll.query();
 
   return (
-    <div className="flex flex-col gap-3">
+    <BaseLayout>
       <div className="flex flex-row items-center justify-between">
         <Heading>Applications</Heading>
         <AddNewWordpressForm>
@@ -76,6 +77,6 @@ export default async function Page() {
           </AlertDescription>
         </Alert>
       )}
-    </div>
+    </BaseLayout>
   );
 }

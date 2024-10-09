@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BaseLayout from "~/components/sections/BaseLayout";
 import Box from "~/components/shared/Box";
 import ContainerStatus from "~/components/shared/ContainerStatus";
 import Heading from "~/components/shared/Heading";
@@ -9,7 +10,7 @@ import { env } from "~/env";
 
 export default async function Page() {
   return (
-    <div className="flex flex-col gap-3">
+    <BaseLayout>
       <Heading>Services</Heading>
       <div className="grid grid-cols-2 gap-4">
         <Box title="MySQL">
@@ -88,8 +89,8 @@ export default async function Page() {
               {env.SFTP_CONTAINER_NAME}
             </ListItem>
             <ListItem label="Port">
-              ftp://{env.SFTP_CONTAINER_NAME}:2222
-            </ListItem>docke
+              sftp://{env.SFTP_CONTAINER_NAME}:2222
+            </ListItem>
           </div>
           <ListItem label="Status">
             <ContainerStatus containerName={env.SFTP_CONTAINER_NAME} />
@@ -101,6 +102,6 @@ export default async function Page() {
           </div>
         </Box>
       </div>
-    </div>
+    </BaseLayout>
   );
 }

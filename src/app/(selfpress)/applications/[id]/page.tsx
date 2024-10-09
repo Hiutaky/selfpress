@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
+import BaseLayout from "~/components/sections/BaseLayout";
 import Box from "~/components/shared/Box";
 import Card from "~/components/shared/Card";
 import ContainerStatus from "~/components/shared/ContainerStatus";
@@ -16,6 +17,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import { env } from "~/env";
 import { api } from "~/trpc/server";
 import Commands from "~/utils/commands";
 import { execPromise } from "~/utils/exec";
@@ -27,6 +29,8 @@ type Props = {
 };
 
 export default async function Page(req: Props) {
+  console.log( 'params', Number(req.params.id) )
+  if( Number.isNaN(req.params.id) ) return;
   const wordPress = await api.wordpress.read.query({
     id: req.params.id,
   });
@@ -52,7 +56,7 @@ export default async function Page(req: Props) {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <BaseLayout>
       <div className="flex flex-row justify-between items-center gap-3">
         <Heading>{wordPress.name}</Heading>
         <div className="flex flex-row gap-3">
@@ -89,7 +93,7 @@ export default async function Page(req: Props) {
           />
           <div className="flex flex-col gap-3">
             <ListItem label="Deployment">
-              {dockerConfig?.volumes}/{dockerConfig?.containerName}
+              {dockerConfig?.containerName}
             </ListItem>
             <ListItem label="Domains">
               <Link
@@ -200,7 +204,12 @@ export default async function Page(req: Props) {
             {new Date(wordpressSettings?.updatedAt ?? 0).toLocaleString()}
           </ListItem>
         </Box>
+        <Box title="SFTP">
+          <ListItem label="Host">sftp://{env.PUBLIC_URL}:2222</ListItem>
+          <ListItem label="User">{dockerConfig.containerName}</ListItem>
+          <ListItem label="Password" type="password">{wordPress.wordpressSettings?.dbPassword}</ListItem>
+        </Box>
       </div>
-    </div>
+    </BaseLayout>
   );
 }

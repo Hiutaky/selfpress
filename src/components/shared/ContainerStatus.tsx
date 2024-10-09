@@ -6,6 +6,7 @@ import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
 import Icon from "./Icon";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { useToast } from "~/hooks/use-toast";
 
 type Props = {
   containerName: string;
@@ -18,7 +19,7 @@ const ContainerStatus: React.FC<Props> = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<ContainerStatuses>(defaultStatus);
-
+  const { toast } = useToast();
   const { data: _status, refetch } = api.docker.getStatus.useQuery(
     {
       name: containerName,
@@ -29,14 +30,26 @@ const ContainerStatus: React.FC<Props> = ({
   );
 
   const updateContainer = api.docker.changeContainerStatus.useMutation({
-    onSuccess: async (data) => {
+    onSuccess: async (data, { action }) => {
       setLoading(false);
-      await refetch();
+      if( data )
+        setStatus(data)
+      //await refetch();
+      toast({
+        variant: "default",
+        title: "Success",
+        description: `${containerName} is now ${data}`,
+      });
       console.log(data);
     },
     onError: (err) => {
       setLoading(false);
       console.log(err);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Unable to update ${containerName}'s state`,
+      });
     },
   });
 

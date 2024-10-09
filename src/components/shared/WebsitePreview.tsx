@@ -11,10 +11,9 @@ type Props = {
 
 const WebsitePreview: React.FC<Props> = ({ imagePath, siteUrl }) => {
   const [path] = useState(imagePath);
-
   return (
     <div className="relative">
-      {path ? (
+      {path && path.includes(".") ? (
         <Link href={siteUrl} target="_blank">
           <picture>
             <img

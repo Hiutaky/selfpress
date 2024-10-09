@@ -4,12 +4,13 @@ import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/server";
 import AddDomainForm from "./_components/AddDomainForm";
 import Card from "~/components/shared/Card";
+import BaseLayout from "~/components/sections/BaseLayout";
 
 export default async function Page() {
   const domains = await api.domain.readAll.query();
 
   return (
-    <div className="flex flex-col gap-3">
+    <BaseLayout>
       <div className="flex flex-row justify-between items-center">
         <Heading>Domains</Heading>
         <AddDomainForm>
@@ -40,6 +41,6 @@ export default async function Page() {
           </Alert>
         )}
       </div>
-    </div>
+    </BaseLayout>
   );
 }

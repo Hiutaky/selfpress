@@ -8,6 +8,7 @@ import "./material.css";
 import { TooltipProvider } from "~/components/ui/tooltip";
 import { getServerAuthSession } from "./api/auth/[...nextauth]/route";
 import SessionProvider from "../providers/session.provider";
+import { Toaster } from "~/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -45,6 +46,7 @@ export default async function RootLayout({
               </div>
             </div>
           </SessionProvider>
+          <Toaster />
         </TRPCReactProvider>
       </body>
     </html>

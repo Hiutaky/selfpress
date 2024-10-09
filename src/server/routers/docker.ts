@@ -30,8 +30,10 @@ export const dockerRouter = router({
         const response = await execPromiseStdout(
           Commands.Docker.updateContainer(input.containerName, input.action),
         );
-        console.log(response);
-        return response;
+        const status = (await execPromiseStdout(
+          Commands.Docker.checkStatus(input.containerName),
+        )) as string;
+        return status.split(" ").at(0) as ContainerStatuses;
       } catch (e) {
         console.error(e);
       }

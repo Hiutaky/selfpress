@@ -59,8 +59,9 @@ export const wordpressRouter = router({
             },
           },
         );
-
-        const imagePath = (await call.text()).replaceAll('"', "");
+        let imagePath: string | null = null;
+        if (call.status === 200)
+          imagePath = ((await call.text()) as string).replaceAll('"', "");
 
         if (!response)
           throw new TRPCError({
@@ -109,6 +110,7 @@ export const wordpressRouter = router({
   read: protectedProcedure
     .input(getOrDeleteWordPressInstallationSchema)
     .query(async ({ ctx, input }) => {
+      console.log("input", input);
       return await ctx.db.wordPressInstallation.findUnique({
         where: { id: Number(input.id) },
         include: {

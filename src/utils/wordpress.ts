@@ -43,11 +43,9 @@ const createNewWordPressInstance = async ({
 
   //creating sftp account and folder
   await execPromiseStdout(
-    Commands.SFTP.addUser(
-      uniqueName,
-      dbPassword
-    )
-  )
+    Commands.SFTP.addUser(uniqueName, dbPassword, env.SFTP_CONTAINER_NAME),
+  );
+  await execPromiseStdout(Commands.Docker.restart(env.SFTP_CONTAINER_NAME));
 
   if (result && !result.success) {
     return false;

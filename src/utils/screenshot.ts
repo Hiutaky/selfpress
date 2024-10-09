@@ -20,5 +20,6 @@ export const takeScreenshot = async (url: string, id: string) => {
     return relativePath;
   } catch (e) {
     console.error(e);
+    return false;
   }
 };

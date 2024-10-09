@@ -47,6 +47,10 @@ const Header: React.FC<Props> = ({}) => {
       href: "terminal",
       label: "Terminal",
     },
+    {
+      href: "settings",
+      label: "Settings",
+    },
   ];
 
   const active = useMemo(() => {
