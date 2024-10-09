@@ -48,11 +48,11 @@ export const domainRouter = router({
       //writing ssl certificate and key
       if (input.ssl) {
         await writeFile(
-          path.join(cwd, `/applications/confgs/nginx/certs/cert-${wpContainerName}.pem`),
+          path.join(cwd, `/applications/confgs/nginx/conf.d/certs/cert-${wpContainerName}.pem`),
           input.certificate!,
         );
         await writeFile(
-          path.join(cwd, `/applications/confgs/nginx/certs/key-${wpContainerName}.pem`),
+          path.join(cwd, `/applications/confgs/nginx/conf.d/certs/key-${wpContainerName}.pem`),
           input.key!,
         );
       }

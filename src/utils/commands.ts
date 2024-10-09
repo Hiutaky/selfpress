@@ -101,7 +101,7 @@ const Commands = {
           --network ${networkName} \
           -p 80:80 \
           -p 443:443 \
-          -v $(pwd)/applications/confs/nginx:/etc/nginx \
+          -v $(pwd)/applications/confs/nginx/conf.d:/etc/nginx/conf.d \
           nginx:latest`,
     reload: (containerName: string) =>
       `docker exec ${containerName} nginx -s reload`,

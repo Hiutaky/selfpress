@@ -68,6 +68,7 @@ export const maybeInitializeSelfpress = async () => {
     );
     file = file
       .replaceAll("{DOMAIN}", cleanURL)
+      .replaceAll("{CONTAINER}", 'localhost:3000')
       .replaceAll("{CONTAINER}:80", 'localhost:3000');
 
     await writeFile(
