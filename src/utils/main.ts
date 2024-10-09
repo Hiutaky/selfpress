@@ -52,7 +52,7 @@ export const maybeInitializeSelfpress = async () => {
   }
 
   //setup nginx main domain if needed
-  if( ! env.PUBLIC_URL.includes('localhost') ) {
+  if( ! env.PUBLIC_URL.includes('localhosdt') ) {
 
     const cleanURL = env.PUBLIC_URL
     .replaceAll("https://", "")
@@ -71,7 +71,7 @@ export const maybeInitializeSelfpress = async () => {
       .replaceAll("{CONTAINER}:80", 'localhost:3000');
 
     await writeFile(
-      path.join(cwd(), `/applications/confgs/nginx/conf.d/main.conf`),
+      path.join(cwd(), `/applications/confs/nginx/conf.d/main.conf`),
       file,
     );
     await execPromiseStdout(
