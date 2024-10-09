@@ -71,7 +71,7 @@ export const wordpressRouter = router({
         const dockerConfigCreated = await ctx.db.dockerConfig.create({
           data: {
             networkName: env.DOCKER_NETWORK_NAME,
-            volumes: `${cwd()}/${env.DOCKER_BASE_PATH}`,
+            volumes: `${cwd()}/${env.DOCKER_BASE_PATH}/data`,
             ports: port.toString(),
             ...dockerConfig,
             containerName: uniqueContainerName,
@@ -89,7 +89,7 @@ export const wordpressRouter = router({
         });
         const installationCreated = await ctx.db.wordPressInstallation.create({
           data: {
-            path: `${process.cwd()}/${env.DOCKER_BASE_PATH}/${uniqueContainerName}:var/www/html`,
+            path: `${process.cwd()}/applications/data/${uniqueContainerName}/wp:var/www/html`,
             dockerId: uniqueContainerName,
             imagePath: imagePath,
             ...installationData,

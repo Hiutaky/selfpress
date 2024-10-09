@@ -33,7 +33,7 @@ export const domainRouter = router({
       let file = await readFile(
         path.join(
           cwd,
-          input.ssl ? "defaults/nginx-ssl.conf" : "defaults/nginx.conf",
+          input.ssl ? "defaults/nginx/nginx-ssl.conf" : "defaults/nginx/nginx.conf",
         ),
         "utf-8",
       );
@@ -41,29 +41,23 @@ export const domainRouter = router({
         .replaceAll("{DOMAIN}", cleanURL)
         .replaceAll("{CONTAINER}", wpContainerName);
       await writeFile(
-        path.join(cwd, `/nginx-configs/${wpContainerName}.conf`),
+        path.join(cwd, `/applications/confgs/nginx/conf.d/${wpContainerName}.conf`),
         file,
       );
 
       //writing ssl certificate and key
       if (input.ssl) {
         await writeFile(
-          path.join(cwd, `/nginx-configs/cert-${wpContainerName}.pem`),
+          path.join(cwd, `/applications/confgs/nginx/certs/cert-${wpContainerName}.pem`),
           input.certificate!,
         );
         await writeFile(
-          path.join(cwd, `/nginx-configs/key-${wpContainerName}.pem`),
+          path.join(cwd, `/applications/confgs/nginx/certs/key-${wpContainerName}.pem`),
           input.key!,
         );
       }
 
       //check if nginx container exists
-      console.log(
-        "checkNginx",
-        await execPromiseStdout(
-          Commands.Docker.checkName(env.NGINX_CONTAINER_NAME),
-        ),
-      );
       if (
         !(await execPromiseStdout(
           Commands.Docker.checkName(env.NGINX_CONTAINER_NAME),
@@ -88,7 +82,7 @@ export const domainRouter = router({
             input.domain,
           ),
         );
-        const { id } = ctx.session.user;
+        const id = ctx.session.user.id as number;
         //create new domain entity
         const create = await ctx.db.domain.create({
           data: {

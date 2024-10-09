@@ -3,6 +3,10 @@ import Commands from "./commands";
 import { execPromiseStdout } from "./exec";
 import MySQL from "./mysql";
 import Nginx from "./nginx";
+import { readFile } from "fs/promises";
+import path from "path";
+import { cwd } from "process";
+import { writeFile } from "fs/promises";
 
 export const maybeInitializeSelfpress = async () => {
   const toCheck = {
@@ -25,12 +29,13 @@ export const maybeInitializeSelfpress = async () => {
       ),
     [env.SFTP_CONTAINER_NAME]: async () =>
       await execPromiseStdout(
-        Commands.SFTP.create(env.SFTP_CONTAINER_NAME, env.DOCKER_NETWORK_NAME),
+        Commands.SFTP.create(env.SFTP_CONTAINER_NAME, env.DOCKER_NETWORK_NAME, env.SFTP_PORT),
       ),
   };
 
   const keys = Object.keys(toCheck);
 
+  //install services
   for (let i = 0; i < keys.length; i++) {
     try {
       const key = keys.at(i) as string;
@@ -44,5 +49,33 @@ export const maybeInitializeSelfpress = async () => {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  //setup nginx main domain if needed
+  if( ! env.PUBLIC_URL.includes('localhost') ) {
+
+    const cleanURL = env.PUBLIC_URL
+    .replaceAll("https://", "")
+    .replaceAll("http://", "");
+
+    //writing nginx conf file
+    let file = await readFile(
+      path.join(
+        cwd(),
+        "defaults/nginx/nginx-ssl.conf",
+      ),
+      "utf-8",
+    );
+    file = file
+      .replaceAll("{DOMAIN}", cleanURL)
+      .replaceAll("{CONTAINER}:80", 'localhost:3000');
+
+    await writeFile(
+      path.join(cwd(), `/applications/confgs/nginx/conf.d/main.conf`),
+      file,
+    );
+    await execPromiseStdout(
+      Commands.Docker.restart(env.NGINX_CONTAINER_NAME)
+    )
   }
 };

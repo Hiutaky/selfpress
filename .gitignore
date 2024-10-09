@@ -52,3 +52,4 @@ applications/confs/sftp/*
 .env
 
 public/assets/screenshots/*.png
+prisma/dev.db-journal

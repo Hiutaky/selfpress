@@ -20,7 +20,9 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    DATABASE_URL: process.env.DATABASE_URL,
+    PROD_DATABASE_URL: process.env.PROD_DATABASE_URL,
+    DEV_DATABASE_URL: process.env.DEV_DATABASE_URL,
+    DATABASE_URL: process.env.NODE_ENV === "production" ? process.env.PROD_DATABASE_URL : process.env.DEV_DATABASE_URL,
     DOCKER_BASE_PATH: process.env.DOCKER_BASE_PATH,
     DOCKER_NETWORK_NAME: process.env.DOCKER_NETWORK_NAME,
     MYSQL_ROOT_PASSWORD: process.env.MYSQL_ROOT_PASSWORD,
@@ -34,6 +36,7 @@ export const env = createEnv({
     PUBLIC_IP: process.env.PUBLIC_IP,
     SFTP_CONTAINER_NAME: process.env.SFTP_CONTAINER_NAME,
     REDIS_CONTAINER_NAME: process.env.REDIS_CONTAINER_NAME,
+    SFTP_PORT: process.env.SFTP_PORT
   },
   /**
    * Specify your server-side environment variables schema here. This way you can ensure the app
@@ -65,6 +68,8 @@ export const env = createEnv({
         (str) => !str.includes("YOUR_MYSQL_URL_HERE"),
         "You forgot to change the default URL",
       ),
+    DEV_DATABASE_URL: z.string(),
+    PROD_DATABASE_URL: z.string(),
     PHPMYADMIN_CONTAINER_NAME: z.string(),
     SFTP_CONTAINER_NAME: z.string(),
     NODE_ENV: z
@@ -72,5 +77,6 @@ export const env = createEnv({
       .default("development"),
     NGINX_CONTAINER_NAME: z.string(),
     REDIS_CONTAINER_NAME: z.string(),
+    SFTP_PORT: z.string()
   },
 });

@@ -58,7 +58,6 @@ const createNewWordPressInstance = async ({
         dbName,
         dbPassword,
         dbUser,
-        dockerPath: `${process.cwd()}/${env.DOCKER_BASE_PATH}`,
         mysqlContainer: env.MYSQL_CONTAINER_NAME,
         mysqlPort: env.MYSQL_PUBLIC_PORT,
         networkName,
