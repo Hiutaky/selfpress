@@ -28,7 +28,6 @@ export const wordpressRouter = router({
 
       const settings = await ctx.db.globalSettings.findFirst();
 
-
       const resp = await cloudflare.dns.records.create({
         content: await getIp(),
         proxied: true,
@@ -37,18 +36,8 @@ export const wordpressRouter = router({
         zone_id: settings?.cloudflareZoneId!,
       })
 
-
-
       const publicUrl = resp.name;
-
-
-      console.log(port)
-
-
       while (await Docker.isPortUsed(port)) port++;
-
-      console.log(port)
-
       installationData.domain = publicUrl;
       installationData.name = `${installationData.name}`;
       try {

@@ -9,6 +9,7 @@ import { TooltipProvider } from "~/components/ui/tooltip";
 import SessionProvider from "../providers/session.provider";
 import { Toaster } from "~/components/ui/toaster";
 import { getServerAuthSession } from "~/server/auth";
+import { getIp } from "~/utils/cloudflare";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

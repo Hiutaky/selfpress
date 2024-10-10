@@ -8,12 +8,8 @@ const cloudflare = new Cloudflare({
 });
 
 export const getIp = async () => {
-    const resp = await (await fetch('https://cloudflare.com/cdn-cgi/trace')).text()
-    const splitted = resp.split('\n');
-    let ip = ''
-    splitted.map( record => record.search('ip') > -1 ?  ip = record as string : null)
-    ip = ip.split('=').at(1);
-    return ip;
+    const resp = await (await fetch('https://api.ipify.org?format=json')).json()
+    return resp.ip;
 }
 
 export default cloudflare;

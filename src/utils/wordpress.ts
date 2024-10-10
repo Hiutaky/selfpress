@@ -41,17 +41,11 @@ const createNewWordPressInstance = async ({
   settings,
 }: CreateWordPressInstance) => {
   //creating mysql db
-
-  console.log('createnew')
   const result = await MySQL.createMysqlDatabase({
     dbName,
     dbUser,
     dbPassword,
   });
-
-
-  console.log(result)
-
   //creating sftp account and folder
   await execPromiseStdout(
     Commands.SFTP.addUser(uniqueName, dbPassword, env.SFTP_CONTAINER_NAME),
