@@ -33,7 +33,9 @@ export const domainRouter = router({
       let file = await readFile(
         path.join(
           cwd,
-          input.ssl ? "defaults/nginx/nginx-ssl.conf" : "defaults/nginx/nginx.conf",
+          input.ssl
+            ? "defaults/nginx/nginx-ssl.conf"
+            : "defaults/nginx/nginx.conf",
         ),
         "utf-8",
       );
@@ -41,18 +43,27 @@ export const domainRouter = router({
         .replaceAll("{DOMAIN}", cleanURL)
         .replaceAll("{CONTAINER}", wpContainerName);
       await writeFile(
-        path.join(cwd, `/applications/confgs/nginx/conf.d/${wpContainerName}.conf`),
+        path.join(
+          cwd,
+          `/applications/confs/nginx/conf.d/${wpContainerName}.conf`,
+        ),
         file,
       );
 
       //writing ssl certificate and key
       if (input.ssl) {
         await writeFile(
-          path.join(cwd, `/applications/confgs/nginx/conf.d/certs/cert-${wpContainerName}.pem`),
+          path.join(
+            cwd,
+            `/applications/confs/nginx/conf.d/certs/cert-${wpContainerName}.pem`,
+          ),
           input.certificate!,
         );
         await writeFile(
-          path.join(cwd, `/applications/confgs/nginx/conf.d/certs/key-${wpContainerName}.pem`),
+          path.join(
+            cwd,
+            `/applications/confs/nginx/conf.d/certs/key-${wpContainerName}.pem`,
+          ),
           input.key!,
         );
       }
@@ -82,7 +93,7 @@ export const domainRouter = router({
             input.domain,
           ),
         );
-        const id = ctx.session.user.id as number;
+        const id = ctx.session.user.id! as number;
         //create new domain entity
         const create = await ctx.db.domain.create({
           data: {
@@ -94,7 +105,11 @@ export const domainRouter = router({
                 id: input.wordpressId,
               },
             },
-            userId: id,
+            user: {
+              connect: {
+                id: id,
+              },
+            },
           },
         });
         //update public url on wordpressSettings

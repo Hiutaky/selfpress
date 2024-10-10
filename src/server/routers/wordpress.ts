@@ -10,6 +10,7 @@ import WordPress from "~/utils/wordpress";
 import { TRPCError } from "@trpc/server";
 import Docker from "~/utils/docker";
 import { cwd } from "process";
+import cloudflare, { getIp } from "~/utils/cloudflare";
 
 // Router tRPC per WordPressInstallations
 export const wordpressRouter = router({
@@ -25,13 +26,36 @@ export const wordpressRouter = router({
       const dbUser = `user_${uniqueContainerName}`;
       let port = 8080;
 
+      const settings = await ctx.db.globalSettings.findFirst();
+
+
+      const resp = await cloudflare.dns.records.create({
+        content: await getIp(),
+        proxied: true,
+        type: 'A',
+        name: uniqueContainerName,
+        zone_id: settings?.cloudflareZoneId!,
+      })
+
+
+
+      const publicUrl = resp.name;
+
+
+      console.log(port)
+
+
       while (await Docker.isPortUsed(port)) port++;
 
-      installationData.domain = `${installationData.domain}:${port}`;
+      console.log(port)
+
+      installationData.domain = publicUrl;
       installationData.name = `${installationData.name}`;
       try {
+        console.log('int try')
         await Docker.createNetwork(env.DOCKER_NETWORK_NAME);
         const response = await WordPress.createNewWordPressInstance({
+          domain: publicUrl,
           dbName,
           dbUser,
           dbPassword,
@@ -47,7 +71,7 @@ export const wordpressRouter = router({
         });
 
         const call = await fetch(
-          `http://${env.PUBLIC_URL}:3000/api/screenshot`,
+          `http://localhost:3000/api/screenshot`,
           {
             method: "POST",
             body: JSON.stringify({

@@ -30,10 +30,9 @@ const ContainerStatus: React.FC<Props> = ({
   );
 
   const updateContainer = api.docker.changeContainerStatus.useMutation({
-    onSuccess: async (data, { action }) => {
+    onSuccess: async (data) => {
       setLoading(false);
-      if( data )
-        setStatus(data)
+      if (data) setStatus(data);
       //await refetch();
       toast({
         variant: "default",

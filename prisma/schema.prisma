@@ -91,3 +91,11 @@ model User {
   installations WordPressInstallation[] @relation("userInstallations")
   domains       Domain[] @relation("userDomains")
 }
+
+model GlobalSettings {
+  id        Int @id @default(autoincrement())
+  cloudflareZoneId String
+  baseUrl   String //used to create wp installations subdomains
+  panelUrl  String //used to access the panel
+
+}

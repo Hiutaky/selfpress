@@ -27,7 +27,7 @@ export const dockerRouter = router({
     )
     .mutation(async ({ input }) => {
       try {
-        const response = await execPromiseStdout(
+        await execPromiseStdout(
           Commands.Docker.updateContainer(input.containerName, input.action),
         );
         const status = (await execPromiseStdout(

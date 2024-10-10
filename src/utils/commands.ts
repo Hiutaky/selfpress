@@ -15,7 +15,7 @@ export type InstallWpCliCMD = {
 };
 export type SetupWpCliCMD = {
   uniqueName: string;
-  port: number | string;
+  domain: number | string;
   siteName: string;
   siteDescription: string;
   adminName: string;
@@ -120,7 +120,6 @@ const Commands = {
     create: (
       containerName: string,
       networkName: string,
-      port: string
     ) => `cp $(pwd)/defaults/sftp/users.conf $(pwd)/applications/confs/sftp/users.conf &&
       docker run --name ${containerName} --network ${networkName} \
         -v $(pwd)/applications/confs/sftp/users.conf:/etc/sftp/users.conf:ro \
@@ -151,7 +150,7 @@ const Commands = {
       `docker exec -t ${uniqueName} bash -c "curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp"`,
     setupWpCli: ({
       uniqueName,
-      port,
+      domain,
       siteName,
       siteDescription,
       adminName,
@@ -159,9 +158,9 @@ const Commands = {
       adminPassword,
       redisContainer,
     }: SetupWpCliCMD) => `docker exec ${uniqueName} /bin/bash -c "
-            su -s /bin/bash www-data -c 'wp core install --url=\\"http://localhost:${port}\\" --title=\\"${siteName}\\" --admin_user=\\"${adminName}\\" --admin_password=\\"${adminPassword}\\" --admin_email=\\"${adminEmail}\\" --skip-email';
-            su -s /bin/bash www-data -c 'wp option update siteurl \\"http://localhost:${port}\\"';
-            su -s /bin/bash www-data -c 'wp option update home \\"http://localhost:${port}\\"';
+            su -s /bin/bash www-data -c 'wp core install --url=\\"https://${domain}\\" --title=\\"${siteName}\\" --admin_user=\\"${adminName}\\" --admin_password=\\"${adminPassword}\\" --admin_email=\\"${adminEmail}\\" --skip-email';
+            su -s /bin/bash www-data -c 'wp option update siteurl \\"https://${domain}\\"';
+            su -s /bin/bash www-data -c 'wp option update home \\"https://${domain}\\"';
             su -s /bin/bash www-data -c 'wp option update blogname \\"${siteName}\\"';
             su -s /bin/bash www-data -c 'wp option update blogdescription \\"${siteDescription}\\"';
             su -s /bin/bash www-data -c 'wp config set WP_REDIS_HOST  \\"${redisContainer}\\"';

@@ -6,9 +6,9 @@ import { TRPCReactProvider } from "~/trpc/react";
 import { cookies } from "next/headers";
 import "./material.css";
 import { TooltipProvider } from "~/components/ui/tooltip";
-import { getServerAuthSession } from "./api/auth/[...nextauth]/route";
 import SessionProvider from "../providers/session.provider";
 import { Toaster } from "~/components/ui/toaster";
+import { getServerAuthSession } from "~/server/auth";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

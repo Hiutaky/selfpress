@@ -60,7 +60,10 @@ export default async function Page() {
             <Logger containerName={env.PHPMYADMIN_CONTAINER_NAME}>
               <Button>Logger</Button>
             </Logger>
-            <Link href={"http://localhost:8079"} target="_blank">
+            <Link
+              href={`http://${env.NODE_ENV !== "development" ? env.PUBLIC_IP : "localhost"}:8079`}
+              target="_blank"
+            >
               <Button>Visit</Button>
             </Link>
           </div>
@@ -89,7 +92,7 @@ export default async function Page() {
               {env.SFTP_CONTAINER_NAME}
             </ListItem>
             <ListItem label="Port">
-              sftp://{env.SFTP_CONTAINER_NAME}:2222
+              sftp://{env.SFTP_CONTAINER_NAME}:${env.SFTP_PORT}
             </ListItem>
           </div>
           <ListItem label="Status">

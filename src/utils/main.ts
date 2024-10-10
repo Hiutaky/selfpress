@@ -29,7 +29,10 @@ export const maybeInitializeSelfpress = async () => {
       ),
     [env.SFTP_CONTAINER_NAME]: async () =>
       await execPromiseStdout(
-        Commands.SFTP.create(env.SFTP_CONTAINER_NAME, env.DOCKER_NETWORK_NAME, env.SFTP_PORT),
+        Commands.SFTP.create(
+          env.SFTP_CONTAINER_NAME,
+          env.DOCKER_NETWORK_NAME
+        ),
       ),
   };
 
@@ -51,32 +54,29 @@ export const maybeInitializeSelfpress = async () => {
     }
   }
 
-  //setup nginx main domain if needed
-  if( ! env.PUBLIC_URL.includes('localhosdt') ) {
-
-    const cleanURL = env.PUBLIC_URL
-    .replaceAll("https://", "")
-    .replaceAll("http://", "");
+  /*//setup nginx main domain if needed
+  if (!env.PUBLIC_URL.includes("localhosdt")) {
+    const cleanURL = env.PUBLIC_URL.replaceAll("https://", "").replaceAll(
+      "http://",
+      "",
+    );
 
     //writing nginx conf file
     let file = await readFile(
-      path.join(
-        cwd(),
-        "defaults/nginx/nginx-ssl.conf",
-      ),
+      path.join(cwd(), "defaults/nginx/nginx-ssl.conf"),
       "utf-8",
     );
     file = file
       .replaceAll("{DOMAIN}", cleanURL)
-      .replaceAll("{CONTAINER}", 'localhost:3000')
-      .replaceAll("{CONTAINER}:80", 'localhost:3000');
+      .replaceAll("key-{CONTAINER}", "key-main")
+      .replaceAll("cert-{CONTAINER}", "cert-main")
+      .replaceAll("{CONTAINER}:80", "172.17.0.1:3000")
+      .replaceAll("{CONTAINER}", "172.17.0.1:3000");
 
     await writeFile(
       path.join(cwd(), `/applications/confs/nginx/conf.d/main.conf`),
       file,
     );
-    await execPromiseStdout(
-      Commands.Docker.restart(env.NGINX_CONTAINER_NAME)
-    )
-  }
+    await execPromiseStdout(Commands.Docker.restart(env.NGINX_CONTAINER_NAME));
+  }*/
 };

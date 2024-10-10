@@ -13,9 +13,11 @@ import AddNewWordpressForm from "./_components/AddNewWordpressForm";
 import Heading from "~/components/shared/Heading";
 import Card from "~/components/shared/Card";
 import BaseLayout from "~/components/sections/BaseLayout";
+import cloudflare from "~/utils/cloudflare";
 
 export default async function Page() {
   const wpInstances = await api.wordpress.readAll.query();
+
 
   return (
     <BaseLayout>

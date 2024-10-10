@@ -6,7 +6,6 @@ import {
 import { callProcedure } from "@trpc/server";
 import { observable } from "@trpc/server/observable";
 import { type TRPCErrorResponse } from "@trpc/server/rpc";
-import { cookies } from "next/headers";
 import { cache } from "react";
 import "server-only";
 
@@ -19,12 +18,7 @@ import { createTRPCContext } from "@/server/trpc";
  * handling a tRPC call from a React Server Component.
  */
 const createContext = cache(() => {
-  return createTRPCContext({
-    headers: new Headers({
-      cookie: cookies().toString(),
-      "x-trpc-source": "rsc",
-    }),
-  });
+  return createTRPCContext();
 });
 
 export const api = createTRPCProxyClient<AppRouter>({

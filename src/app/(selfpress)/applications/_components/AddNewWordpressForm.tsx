@@ -24,6 +24,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { env } from "~/env";
 import { api } from "~/trpc/react";
 
 type Props = {
@@ -74,7 +75,7 @@ const AddNewWordpressForm: React.FC<Props> = ({ children }) => {
     setLoading(true);
     create.mutate({
       name: values.name,
-      domain: "http://localhost",
+      domain: `http://localhost`,
       wordpressSettings: {
         ...values.wordpressSettings,
       },
@@ -176,7 +177,7 @@ const AddNewWordpressForm: React.FC<Props> = ({ children }) => {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={false}>
               Submit
             </Button>
           </form>

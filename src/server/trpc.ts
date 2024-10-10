@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { inferAsyncReturnType } from "@trpc/server";
 import SuperJSON from "superjson";
-import { getServerAuthSession } from "~/app/api/auth/[...nextauth]/route";
+import { getServerAuthSession } from "./auth";
 
 export const createTRPCContext = async () => {
   const session = await getServerAuthSession();
