@@ -24,7 +24,6 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { env } from "~/env";
 import { api } from "~/trpc/react";
 
 type Props = {
@@ -177,7 +176,7 @@ const AddNewWordpressForm: React.FC<Props> = ({ children }) => {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={false}>
+            <Button type="submit" disabled={loading}>
               Submit
             </Button>
           </form>

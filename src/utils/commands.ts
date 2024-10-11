@@ -101,7 +101,7 @@ const Commands = {
           --network ${networkName} \
           -p 80:80 \
           -p 443:443 \
-          -v $(pwd)/applications/confs/nginx/conf.d:/etc/nginx/conf.d \
+          -v $(pwd)/applications/confs/nginx/conf.d:/etc/nginx/conf.d:ro \
           nginx:latest`,
     reload: (containerName: string) =>
       `docker exec ${containerName} nginx -s reload`,
@@ -124,7 +124,7 @@ const Commands = {
       docker run --name ${containerName} --network ${networkName} \
         -v $(pwd)/applications/confs/sftp/users.conf:/etc/sftp/users.conf:ro \
         -v $(pwd)/applications/data:/home \
-        -p 2222:22 -d atmoz/sftp
+        -p 2222:22 -d jmcombs/sftp
     `,
   },
   WordPress: {

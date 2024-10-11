@@ -140,7 +140,6 @@ const createNewWordPressInstance = async ({
           await execPromiseStdout(
             Commands.Nginx.reload(env.NGINX_CONTAINER_NAME),
           );
-          
         }
         return false;
       } else return false;

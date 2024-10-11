@@ -28,20 +28,26 @@ export const wordpressRouter = router({
 
       const settings = await ctx.db.globalSettings.findFirst();
 
+      if (!settings)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Unable to find a Cloudflare zone",
+        });
+
       const resp = await cloudflare.dns.records.create({
         content: await getIp(),
         proxied: true,
-        type: 'A',
+        type: "A",
         name: uniqueContainerName,
-        zone_id: settings?.cloudflareZoneId!,
-      })
+        zone_id: settings.cloudflareZoneId,
+      });
 
       const publicUrl = resp.name;
       while (await Docker.isPortUsed(port)) port++;
       installationData.domain = publicUrl;
       installationData.name = `${installationData.name}`;
       try {
-        console.log('int try')
+        console.log("int try");
         await Docker.createNetwork(env.DOCKER_NETWORK_NAME);
         const response = await WordPress.createNewWordPressInstance({
           domain: publicUrl,
@@ -59,19 +65,16 @@ export const wordpressRouter = router({
           },
         });
 
-        const call = await fetch(
-          `http://localhost:3000/api/screenshot`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              url: installationData.domain,
-              id: uniqueContainerName,
-            }),
-            headers: {
-              "Content-Type": "application/json",
-            },
+        const call = await fetch(`http://localhost:3000/api/screenshot`, {
+          method: "POST",
+          body: JSON.stringify({
+            url: installationData.domain,
+            id: uniqueContainerName,
+          }),
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+        });
         let imagePath: string | null = null;
         if (call.status === 200)
           imagePath = ((await call.text()) as string).replaceAll('"', "");

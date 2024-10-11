@@ -3,10 +3,6 @@ import Commands from "./commands";
 import { execPromiseStdout } from "./exec";
 import MySQL from "./mysql";
 import Nginx from "./nginx";
-import { readFile } from "fs/promises";
-import path from "path";
-import { cwd } from "process";
-import { writeFile } from "fs/promises";
 
 export const maybeInitializeSelfpress = async () => {
   const toCheck = {
@@ -29,10 +25,7 @@ export const maybeInitializeSelfpress = async () => {
       ),
     [env.SFTP_CONTAINER_NAME]: async () =>
       await execPromiseStdout(
-        Commands.SFTP.create(
-          env.SFTP_CONTAINER_NAME,
-          env.DOCKER_NETWORK_NAME
-        ),
+        Commands.SFTP.create(env.SFTP_CONTAINER_NAME, env.DOCKER_NETWORK_NAME),
       ),
   };
 
