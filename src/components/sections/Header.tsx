@@ -5,7 +5,14 @@ import { ReactNode, useMemo } from "react";
 import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
 import Icon from "../shared/Icon";
-import { api } from "~/trpc/react";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 type Props = {
   children?: ReactNode;
@@ -17,12 +24,7 @@ type MenuItem = {
 };
 const Header: React.FC<Props> = ({}) => {
   const path = usePathname();
-
-  const create = api.wordpress.create.useMutation({
-    onSuccess(data) {
-      console.log(data);
-    },
-  });
+  const session = useSession();
 
   const menu: MenuItem[] = [
     {
@@ -34,12 +36,20 @@ const Header: React.FC<Props> = ({}) => {
       label: "Applications",
     },
     {
-      href: "database",
-      label: "Database",
+      href: "domains",
+      label: "Domains",
+    },
+    {
+      href: "services",
+      label: "Services",
     },
     {
       href: "terminal",
       label: "Terminal",
+    },
+    {
+      href: "settings",
+      label: "Settings",
     },
   ];
 
@@ -47,47 +57,69 @@ const Header: React.FC<Props> = ({}) => {
     return path.split("/").at(1);
   }, [path]);
 
-  const createWordpress = () => {
-    create.mutate({
-      domain: "http://localhost",
-      name: "Firtst",
-      wordpressSettings: {
-        adminName: "hiutaky",
-        adminPassword: "Cercaz2016?",
-        siteDescription: "Just a demo site",
-        adminEmail: "hiutaky@gmail.com",
-        siteName: "Test site",
-        siteUrl: "http://localhost",
-        tablePrefix: "wp_",
-      },
-      dockerConfig: {
-        //containerName: 'firstcontainer',
-        networkName: "main-network",
-        restartPolicy: "always",
-      },
-    });
-  };
-
   return (
-    <div className="container flex flex-row justify-between items-center text-white p-3 bg-stone-950 rounded mt-3">
-      <Link href={"/"}>
-        <h1 className="text-xl font-semibold">SelfPress</h1>
-      </Link>
-      <ul className="flex flex-row gap-3 font-semibold">
+    <div className="w-full flex flex-col gap-2 text-white p-5 pb-[0px] bg-neutral-950 border-b-[1px] border-neutral-800">
+      <div className="flex flex-row justify-between items-center">
+        <Link
+          href={"/"}
+          className="flex flex-row gap-3 items-center text-lg font-semibold"
+        >
+          <Image
+            alt="Selfpress Logo"
+            src="/assets/images/logo.webp"
+            width={30}
+            height={30}
+          />
+          Selfpress
+        </Link>
+        <div className="flex flex-row gap-3">
+          {session.data?.user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button>
+                  <Icon>add</Icon>
+                  Create
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem>
+                  <Icon>grid_view</Icon>
+                  Application
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Icon>language</Icon>
+                  Domain
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          {session.data?.user ? (
+            <Button>{session.data.user.username}</Button>
+          ) : (
+            <Link href={"/signin"}>
+              <Button>
+                <Icon>person</Icon>
+                Sign In
+              </Button>
+            </Link>
+          )}
+        </div>
+      </div>
+      <ul className="flex flex-row text-xs">
         {menu.map((item, i) => (
-          <Link
-            className={`hover:text-opacity-100 transition-all ${active === item.href ? "text-primary" : "text-white"} text-opacity-75`}
-            href={`/${item.href}`}
+          <li
             key={i}
+            className={`py-3  ${active === item.href ? "border-b-2 border-white" : "text-opacity-75"}`}
           >
-            {item.label}
-          </Link>
+            <Link
+              className={`hover:text-opacity-100 text-opacity-50 transition-all rounded text-white ${active === item.href && "!text-opacity-100"} hover:bg-slate-50 hover:bg-opacity-10 x py-2 px-3`}
+              href={`/${item.href}`}
+            >
+              {item.label}
+            </Link>
+          </li>
         ))}
       </ul>
-      <Button onClick={() => createWordpress()}>
-        <Icon size={18}>add</Icon>
-        Create
-      </Button>
     </div>
   );
 };

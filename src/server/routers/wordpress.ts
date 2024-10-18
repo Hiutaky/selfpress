@@ -1,4 +1,4 @@
-import { publicProcedure, router } from "../trpc";
+import { protectedProcedure, router } from "../trpc";
 import {
   createWordPressInstallationSchema,
   updateWordPressInstallationSchema,
@@ -9,30 +9,48 @@ import { env } from "~/env";
 import WordPress from "~/utils/wordpress";
 import { TRPCError } from "@trpc/server";
 import Docker from "~/utils/docker";
+import { cwd } from "process";
+import cloudflare, { getIp } from "~/utils/cloudflare";
 
 // Router tRPC per WordPressInstallations
 export const wordpressRouter = router({
-  create: publicProcedure
+  create: protectedProcedure
     .input(createWordPressInstallationSchema)
     .mutation(async ({ ctx, input }) => {
       const { dockerConfig, wordpressSettings, ...installationData } = input;
-
-      const rand = randomBytes(8).toString("hex");
-      const dbName = `db_${rand}`;
-      const dbUser = `user_${rand}`;
+      if (!ctx.session?.user) throw new TRPCError({ code: "UNAUTHORIZED" });
       const dbPassword = randomBytes(16).toString("hex");
       const uniqueUuid = randomBytes(2).toString("hex");
-      const uniqueContainerName = `wp-${uniqueUuid}`;
+      const uniqueContainerName = `wp_${uniqueUuid}`;
+      const dbName = `db_${uniqueContainerName}`;
+      const dbUser = `user_${uniqueContainerName}`;
       let port = 8080;
 
-      while (await Docker.isPortUsed(port)) port++;
+      const settings = await ctx.db.globalSettings.findFirst();
 
-      wordpressSettings.siteUrl = `${wordpressSettings.siteUrl}:${port}`;
-      installationData.domain = `${installationData.domain}:${port}`;
-      installationData.name = `${installationData.name}_${rand}`;
+      if (!settings)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Unable to find a Cloudflare zone",
+        });
+
+      const resp = await cloudflare.dns.records.create({
+        content: await getIp(),
+        proxied: true,
+        type: "A",
+        name: uniqueContainerName,
+        zone_id: settings.cloudflareZoneId,
+      });
+
+      const publicUrl = resp.name;
+      while (await Docker.isPortUsed(port)) port++;
+      installationData.domain = publicUrl;
+      installationData.name = `${installationData.name}`;
       try {
+        console.log("int try");
         await Docker.createNetwork(env.DOCKER_NETWORK_NAME);
         const response = await WordPress.createNewWordPressInstance({
+          domain: publicUrl,
           dbName,
           dbUser,
           dbPassword,
@@ -46,13 +64,30 @@ export const wordpressRouter = router({
             siteName: wordpressSettings.siteName,
           },
         });
+
+        const call = await fetch(`http://localhost:3000/api/screenshot`, {
+          method: "POST",
+          body: JSON.stringify({
+            url: installationData.domain,
+            id: uniqueContainerName,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        let imagePath: string | null = null;
+        if (call.status === 200)
+          imagePath = ((await call.text()) as string).replaceAll('"', "");
+
         if (!response)
-          return new TRPCError({
+          throw new TRPCError({
             message: "Unable to create wordpress instance",
             code: "INTERNAL_SERVER_ERROR",
           });
         const dockerConfigCreated = await ctx.db.dockerConfig.create({
           data: {
+            networkName: env.DOCKER_NETWORK_NAME,
+            volumes: `${cwd()}/${env.DOCKER_BASE_PATH}/data`,
             ports: port.toString(),
             ...dockerConfig,
             containerName: uniqueContainerName,
@@ -60,6 +95,7 @@ export const wordpressRouter = router({
         });
         const wordpressSettingsCreated = await ctx.db.wordPressSettings.create({
           data: {
+            siteUrl: installationData.domain,
             ...wordpressSettings,
             dbHost: `${env.MYSQL_CONTAINER_NAME}:3306`,
             dbName,
@@ -69,11 +105,13 @@ export const wordpressRouter = router({
         });
         const installationCreated = await ctx.db.wordPressInstallation.create({
           data: {
-            path: `${env.DOCKER_BASE_PATH}/${uniqueContainerName}:var/www/html`,
+            path: `${process.cwd()}/applications/data/${uniqueContainerName}/wp:var/www/html`,
             dockerId: uniqueContainerName,
+            imagePath: imagePath,
             ...installationData,
             dockerConfigId: dockerConfigCreated.id,
             wordpressSettingsId: wordpressSettingsCreated.id,
+            userId: ctx.session.user.id,
           },
         });
 
@@ -85,11 +123,12 @@ export const wordpressRouter = router({
     }),
 
   // Leggi una singola installazione di WordPress
-  read: publicProcedure
+  read: protectedProcedure
     .input(getOrDeleteWordPressInstallationSchema)
     .query(async ({ ctx, input }) => {
+      console.log("input", input);
       return await ctx.db.wordPressInstallation.findUnique({
-        where: { name: input.name },
+        where: { id: Number(input.id) },
         include: {
           dockerConfig: true,
           wordpressSettings: true,
@@ -98,7 +137,7 @@ export const wordpressRouter = router({
     }),
 
   // Leggi tutte le installazioni di WordPress
-  readAll: publicProcedure.query(async ({ ctx }) => {
+  readAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.wordPressInstallation.findMany({
       include: {
         dockerConfig: true,
@@ -108,7 +147,7 @@ export const wordpressRouter = router({
   }),
 
   // Modifica un'installazione di WordPress
-  update: publicProcedure
+  update: protectedProcedure
     .input(updateWordPressInstallationSchema)
     .mutation(async ({ ctx, input }) => {
       const { id, dockerConfig, wordpressSettings, ...updateData } = input;
@@ -145,12 +184,12 @@ export const wordpressRouter = router({
     }),
 
   // Elimina un'installazione di WordPress
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(getOrDeleteWordPressInstallationSchema)
     .mutation(async ({ ctx, input }) => {
       // Trova l'installazione
       const installation = await ctx.db.wordPressInstallation.findUnique({
-        where: { name: input.name },
+        where: { id: Number(input.id) },
       });
 
       if (
@@ -172,7 +211,7 @@ export const wordpressRouter = router({
 
       // Elimina WordPressInstallation
       await ctx.db.wordPressInstallation.delete({
-        where: { name: input.name },
+        where: { id: Number(input.id) },
       });
 
       return { success: true };

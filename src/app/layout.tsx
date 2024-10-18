@@ -5,6 +5,10 @@ import Header from "~/components/sections/Header";
 import { TRPCReactProvider } from "~/trpc/react";
 import { cookies } from "next/headers";
 import "./material.css";
+import { TooltipProvider } from "~/components/ui/tooltip";
+import SessionProvider from "../providers/session.provider";
+import { Toaster } from "~/components/ui/toaster";
+import { getServerAuthSession } from "~/server/auth";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -22,23 +26,27 @@ export const metadata: Metadata = {
   description: "Effortlessly manage WordPress installations in one place",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerAuthSession();
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} text-white bg-stone-900 antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} text-white text-opacity-60 text-xs bg-black antialiased`}
       >
         <TRPCReactProvider cookies={cookies().toString()}>
-          <div className="flex flex-col justify-center items-center gap-3">
-            <Header />
-            <div className="container p-4 bg-stone-950 rounded shadow-sm">
-              {children}
+          <SessionProvider session={session}>
+            <div className="flex flex-col justify-center items-center">
+              <Header />
+              <div className="lg:container p-6 rounded shadow-sm">
+                <TooltipProvider>{children}</TooltipProvider>
+              </div>
             </div>
-          </div>
+          </SessionProvider>
+          <Toaster />
         </TRPCReactProvider>
       </body>
     </html>

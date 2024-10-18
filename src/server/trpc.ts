@@ -1,11 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import { inferAsyncReturnType } from "@trpc/server";
-import { getServerSession } from "next-auth";
 import SuperJSON from "superjson";
+import { getServerAuthSession } from "./auth";
 
 export const createTRPCContext = async () => {
-  const session = await getServerSession();
+  const session = await getServerAuthSession();
   return {
     db: new PrismaClient(),
     session,
@@ -20,3 +20,13 @@ const t = initTRPC.context<Context>().create({
 
 export const router = t.router;
 export const publicProcedure = t.procedure;
+export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.session?.user)
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  console.log(ctx.session.user);
+  return next({
+    ctx,
+  });
+});

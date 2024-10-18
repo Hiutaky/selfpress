@@ -1,0 +1,11 @@
+selfpress
+/applications
+/data
+/[sftp-user|wp-unique-name]
+/wp
+/confs
+/sftp
+/users.conf
+/nginx
+/conf.d
+/certs
