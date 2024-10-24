@@ -1,0 +1,57 @@
+# File Version: 1.0.0
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: ${MYSQL_CONTAINER_NAME}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "${MYSQL_PUBLIC_PORT}:3306"
+    networks:
+      - selfpress
+
+  nginx:
+    image: nginx:latest
+    container_name: ${NGINX_CONTAINER_NAME}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./applications/confs/nginx/conf.d:/etc/nginx/conf.d:ro
+    networks:
+      - ${DOCKER_NETWORK_NAME}
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: ${PHPMYADMIN_CONTAINER_NAME}
+    environment:
+      PMA_HOST: mysql
+    ports:
+      - "8079:80"
+    networks:
+      - selfpress
+    links:
+      - mysql:db
+
+  redis:
+    image: redis:latest
+    container_name: ${REDIS_CONTAINER_NAME}
+    networks:
+      - ${DOCKER_NETWORK_NAME}
+
+  sftp:
+    image: jmcombs/sftp
+    container_name: ${SFTP_CONTAINER_NAME}
+    ports:
+      - "2222:22"
+    volumes:
+      - ./applications/confs/sftp/users.conf:/etc/sftp/users.conf:ro
+      - ./applications/data:/home
+    networks:
+      - ${DOCKER_NETWORK_NAME}
+
+networks:
+  selfpress:
+    name: selfpress
+    driver: bridge

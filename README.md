@@ -18,7 +18,7 @@ SelfPress is a multi-instance WordPress management system that allows users to m
 
 ## Prerequisites
 
-- **Docker**: Make sure you have Docker installed. You can install it by following the official [Docker documentation](https://docs.docker.com/get-docker/).
+- **Docker**: Make sure you have Docker and Docker Compose installed. You can install it by following the official [Docker documentation](https://docs.docker.com/get-docker/).
 - **Bun.sh**: For running the SelfPress manager. [Get Bun](https://bun.sh/)
 
 ## Installation
@@ -54,7 +54,7 @@ SelfPress is a multi-instance WordPress management system that allows users to m
 
 ### Create the Admin Account
 
-To get started, you'll need to create an Administrator Account to secure your dashboard. Once that's done, you can configure the main domain for your panel. This domain can only be linked using the Cloudflare API. As part of the setup, you'll also need to generate Origin Certificates to ensure a secure connection for both the panel and the WordPress installations.
+To get started, you'll need to create an Administrator Account to secure your dashboard. Once that's done, you can configure the main domain for your panel. This domain can only be linked using the Cloudflare API. As part of the setup, you'll also need to generate Origin Certificates to ensure a secure connection for both the panel and the WordPress installations. (domains can be connected only using production environment and server with public ip exposed properly)
 
 Each WordPress installation you deploy will automatically receive a custom subdomain based on the main domain you've assigned to the panel, making it instantly accessible. Later, you'll have the option to link a different main domain if needed.
 
@@ -68,7 +68,7 @@ The SelfPress manager provides an interface to deploy new WordPress instances. Y
 
 ### Managing WordPress Installations
 
-- **Domains**: By using the native Cloudflare integration, creating and assigning new Domains is super-easy. By using the guided interface you can assign or create new subdomain and domain, manage Origin Certificates and automatially setup the needed Nginx Configurations. 
+- **Domains**: By using the native Cloudflare integration, creating and assigning new Domains is super-easy. By using the guided interface you can assign or create new subdomain and domain, manage Origin Certificates and automatially setup the needed Nginx Configurations.
 - **Settings**: Customize WordPress and Docker container settings directly from the interface.
 
 ### API

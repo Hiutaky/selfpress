@@ -45,7 +45,7 @@ export const authOptions: NextAuthOptions = {
         try {
           const result = await z
             .object({
-              emailOrUsername: z.string().email(),
+              emailOrUsername: z.string().email().or(z.string()),
               password: z.string().min(9),
             })
             .safeParseAsync(credentials);

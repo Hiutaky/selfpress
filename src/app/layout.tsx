@@ -41,7 +41,7 @@ export default async function RootLayout({
           <SessionProvider session={session}>
             <div className="flex flex-col justify-center items-center">
               <Header />
-              <div className="lg:container p-6 rounded shadow-sm">
+              <div className="w-full rounded shadow-sm">
                 <TooltipProvider>{children}</TooltipProvider>
               </div>
             </div>

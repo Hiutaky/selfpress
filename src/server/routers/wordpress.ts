@@ -20,37 +20,38 @@ export const wordpressRouter = router({
       const { dockerConfig, wordpressSettings, ...installationData } = input;
       if (!ctx.session?.user) throw new TRPCError({ code: "UNAUTHORIZED" });
       const dbPassword = randomBytes(16).toString("hex");
-      const uniqueUuid = randomBytes(2).toString("hex");
+      const uniqueUuid = randomBytes(4).toString("hex");
       const uniqueContainerName = `wp_${uniqueUuid}`;
       const dbName = `db_${uniqueContainerName}`;
       const dbUser = `user_${uniqueContainerName}`;
-      let port = 8080;
+
+      let port = 8081;
+      while (await Docker.isPortUsed(port)) port++;
 
       const settings = await ctx.db.globalSettings.findFirst();
 
-      if (!settings)
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Unable to find a Cloudflare zone",
+      let publicUrl = `localhost:${port}`;
+      let prefix = "http";
+      if (settings?.cloudflareZoneId) {
+        const resp = await cloudflare.dns.records.create({
+          content: await getIp(),
+          proxied: true,
+          type: "A",
+          name: uniqueContainerName,
+          zone_id: settings.cloudflareZoneId,
         });
+        publicUrl = resp.name;
+        prefix = "https";
+      }
 
-      const resp = await cloudflare.dns.records.create({
-        content: await getIp(),
-        proxied: true,
-        type: "A",
-        name: uniqueContainerName,
-        zone_id: settings.cloudflareZoneId,
-      });
-
-      const publicUrl = resp.name;
-      while (await Docker.isPortUsed(port)) port++;
       installationData.domain = publicUrl;
+      console.log(installationData.name);
       installationData.name = `${installationData.name}`;
       try {
         console.log("int try");
         await Docker.createNetwork(env.DOCKER_NETWORK_NAME);
         const response = await WordPress.createNewWordPressInstance({
-          domain: publicUrl,
+          domain: `${prefix}://${publicUrl}`,
           dbName,
           dbUser,
           dbPassword,
@@ -132,6 +133,7 @@ export const wordpressRouter = router({
         include: {
           dockerConfig: true,
           wordpressSettings: true,
+          domains: true,
         },
       });
     }),

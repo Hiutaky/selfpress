@@ -7,6 +7,7 @@ import { writeFile } from "fs/promises";
 import { execPromiseStdout } from "~/utils/exec";
 import Commands from "~/utils/commands";
 import { env } from "~/env";
+import cloudflare, { getIp } from "~/utils/cloudflare";
 
 export const mainRouter = router({
   setupCloudflare: protectedProcedure
@@ -50,6 +51,14 @@ export const mainRouter = router({
       await execPromiseStdout(
         Commands.Docker.restart(env.NGINX_CONTAINER_NAME),
       );
+
+      await cloudflare.dns.records.create({
+        content: await getIp(),
+        proxied: true,
+        type: "A",
+        name: input.domain,
+        zone_id: input.zoneId,
+      });
 
       return await ctx.db.globalSettings.create({
         data: {
