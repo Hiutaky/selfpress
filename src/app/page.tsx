@@ -1,9 +1,17 @@
+import BaseLayout, {
+  BaseLayoutContainer,
+} from "~/components/sections/BaseLayout";
+import Heading from "~/components/shared/Heading";
+
 export default function Home() {
   return (
-    <div className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Dashboard</h2>
-      <span>Check all your instances and metrics from this page.</span>
-      <div className=""></div>
-    </div>
+    <BaseLayout>
+      <BaseLayoutContainer>
+        <div className="flex flex-col gap-2">
+          <Heading>Welcome!</Heading>
+          <span>Dashboard is still under construction.</span>
+        </div>
+      </BaseLayoutContainer>
+    </BaseLayout>
   );
 }

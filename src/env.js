@@ -37,6 +37,7 @@ export const env = createEnv({
     SFTP_PORT: process.env.SFTP_PORT,
     CLOUDFLARE_EMAIL: process.env.CLOUDFLARE_EMAIL,
     CLOUDFLARE_API_KEY: process.env.CLOUDFLARE_API_KEY,
+    NODE_ENV: "production",
   },
   /**
    * Specify your server-side environment variables schema here. This way you can ensure the app

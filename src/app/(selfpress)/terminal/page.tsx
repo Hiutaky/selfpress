@@ -1,6 +1,9 @@
 import { execPromise } from "~/utils/exec";
 import Terminal from "./_components/Terminal";
-import BaseLayout from "~/components/sections/BaseLayout";
+import BaseLayout, {
+  BaseLayoutContainer,
+} from "~/components/sections/BaseLayout";
+import Heading from "~/components/shared/Heading";
 
 export default async function Page() {
   const execStdout = async (command: string) => {
@@ -10,7 +13,10 @@ export default async function Page() {
 
   return (
     <BaseLayout>
-      <Terminal execStdout={execStdout} />
+      <BaseLayoutContainer>
+        <Heading>Terminal</Heading>
+        <Terminal execStdout={execStdout} />
+      </BaseLayoutContainer>
     </BaseLayout>
   );
 }

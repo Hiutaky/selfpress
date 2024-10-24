@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ReactNode, useMemo } from "react";
+import { ReactNode } from "react";
 import { Button } from "../ui/button";
-import { usePathname } from "next/navigation";
 import Icon from "../shared/Icon";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -13,17 +12,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import Navigation, { MenuItem } from "../shared/Navigation";
 
 type Props = {
   children?: ReactNode;
 };
-type MenuItem = {
-  href: string;
-  label: string;
-  className?: string;
-};
 const Header: React.FC<Props> = ({}) => {
-  const path = usePathname();
   const session = useSession();
 
   const menu: MenuItem[] = [
@@ -52,10 +46,6 @@ const Header: React.FC<Props> = ({}) => {
       label: "Settings",
     },
   ];
-
-  const active = useMemo(() => {
-    return path.split("/").at(1);
-  }, [path]);
 
   return (
     <div className="w-full flex flex-col gap-2 text-white p-5 pb-[0px] bg-neutral-950 border-b-[1px] border-neutral-800">
@@ -105,21 +95,7 @@ const Header: React.FC<Props> = ({}) => {
           )}
         </div>
       </div>
-      <ul className="flex flex-row text-xs">
-        {menu.map((item, i) => (
-          <li
-            key={i}
-            className={`py-3  ${active === item.href ? "border-b-2 border-white" : "text-opacity-75"}`}
-          >
-            <Link
-              className={`hover:text-opacity-100 text-opacity-50 transition-all rounded text-white ${active === item.href && "!text-opacity-100"} hover:bg-slate-50 hover:bg-opacity-10 x py-2 px-3`}
-              href={`/${item.href}`}
-            >
-              {item.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <Navigation menu={menu} />
     </div>
   );
 };

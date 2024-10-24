@@ -158,9 +158,9 @@ const Commands = {
       adminPassword,
       redisContainer,
     }: SetupWpCliCMD) => `docker exec ${uniqueName} /bin/bash -c "
-            su -s /bin/bash www-data -c 'wp core install --url=\\"https://${domain}\\" --title=\\"${siteName}\\" --admin_user=\\"${adminName}\\" --admin_password=\\"${adminPassword}\\" --admin_email=\\"${adminEmail}\\" --skip-email';
-            su -s /bin/bash www-data -c 'wp option update siteurl \\"https://${domain}\\"';
-            su -s /bin/bash www-data -c 'wp option update home \\"https://${domain}\\"';
+            su -s /bin/bash www-data -c 'wp core install --url=\\"${domain}\\" --title=\\"${siteName}\\" --admin_user=\\"${adminName}\\" --admin_password=\\"${adminPassword}\\" --admin_email=\\"${adminEmail}\\" --skip-email';
+            su -s /bin/bash www-data -c 'wp option update siteurl \\"${domain}\\"';
+            su -s /bin/bash www-data -c 'wp option update home \\"${domain}\\"';
             su -s /bin/bash www-data -c 'wp option update blogname \\"${siteName}\\"';
             su -s /bin/bash www-data -c 'wp option update blogdescription \\"${siteDescription}\\"';
             su -s /bin/bash www-data -c 'wp config set WP_REDIS_HOST  \\"${redisContainer}\\"';
