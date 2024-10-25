@@ -12,7 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import Navigation, { MenuItem } from "../shared/Navigation";
+import Navigation, { type MenuItem } from "../shared/Navigation";
 
 type Props = {
   children?: ReactNode;
