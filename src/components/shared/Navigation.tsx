@@ -26,10 +26,10 @@ const Navigation: React.FC<Props> = ({ menu, fullPath = false }) => {
       {menu.map((item, i) => (
         <li
           key={i}
-          className={`py-3  ${active === item.href ? "border-b-2 border-white" : "text-opacity-75"}`}
+          className={`py-4  ${active === item.href ? "border-b-2 border-white" : "text-opacity-75"}`}
         >
           <Link
-            className={`hover:text-opacity-100 text-opacity-50 transition-all rounded text-white ${active === item.href && "!text-opacity-100"} hover:bg-slate-50 hover:bg-opacity-10 x py-2 px-3`}
+            className={`hover:text-opacity-100 text-opacity-50 transition-all rounded text-white ${active === item.href && "!text-opacity-100"} hover:bg-slate-50 hover:bg-opacity-10 x py-3 px-3`}
             href={`/${item.href}`}
           >
             {item.label}

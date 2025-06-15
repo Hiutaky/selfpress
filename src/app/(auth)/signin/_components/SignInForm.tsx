@@ -36,46 +36,42 @@ const SignInForm: React.FC = () => {
   };
 
   return (
-    <div className="max-w-[420px] w-full">
-      <Box title="Sign in">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-4"
-          >
-            <FormField
-              control={form.control}
-              name="emailOrUsername"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="myuser" />
-                  </FormControl>
-                  <FormMessage></FormMessage>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                  <FormMessage></FormMessage>
-                </FormItem>
-              )}
-            />
-            <Button variant={"default"} type="submit">
-              Sign In
-            </Button>
-          </form>
-        </Form>
-      </Box>
-    </div>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-4"
+      >
+        <FormField
+          control={form.control}
+          name="emailOrUsername"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="myuser" />
+              </FormControl>
+              <FormMessage></FormMessage>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" {...field} />
+              </FormControl>
+              <FormMessage></FormMessage>
+            </FormItem>
+          )}
+        />
+        <Button  type="submit">
+          Sign In
+        </Button>
+      </form>
+    </Form>
   );
 };
 export default SignInForm;
